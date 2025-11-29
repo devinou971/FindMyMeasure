@@ -1,0 +1,121 @@
+﻿
+<Window x:Class="FindMyMeasure.Gui.ReportSelectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FindMyMeasure.Gui"
+        mc:Ignorable="d"
+        Title="{DynamicResource ReportSelectionWindow.Title}" Height="450" Width="800">
+
+    <Window.Resources>
+        <!-- Style pour bouton icône : fond rouge, icône blanche, coins arrondis -->
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="Red"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Width="162">FindMyMeasure</Label>
+        <StackPanel Grid.Row="1" Margin="0,10,0,10" >
+            <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{DynamicResource ReportSelectionWindow.SelectionTextBlock.Text}" />
+            <Button Margin="0,10,0,0" Grid.Row="1" Name="bImportReports" Content="{DynamicResource ReportSelectionWindow.Button.ImportReport.Content}" Width="156" HorizontalAlignment="Left" Click="bImportReports_Click" />
+        </StackPanel>
+
+        <DataGrid Grid.Row="2" Margin="0,0,0,10" Name="dgReportList" Height="Auto" AutoGenerateColumns="False" CanUserAddRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding ModelName}" Width="*" IsReadOnly="True">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource ReportSelectionWindow.Column.SemanticModel.Header}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Binding="{Binding ReportName}" Width="*" IsReadOnly="True">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource ReportSelectionWindow.Column.ReportName.Header}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+
+                <DataGridTemplateColumn Visibility="Collapsed" x:Name="colAnalyseHiddenPages">
+                    <DataGridTemplateColumn.Header>
+                        <CheckBox Name="cbAnalyseHiddenPages" Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenPages.Header}" IsThreeState="True" Click="cbAnalyseHiddenPages_Click" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Name="cbAnalyseHiddenPagesForRow" IsChecked="{Binding AnalyseHiddenPages, Mode=OneWay}" Click="cbAnalyseHiddenPagesForRow_Click" Tag="{Binding ReportId}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Visibility="Collapsed" x:Name="colAnalyseHiddenVisuals">
+                    <DataGridTemplateColumn.Header>
+                        <CheckBox Name="cbAnalyseHiddenVisuals" Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenVisuals.Header}" IsThreeState="True" Click="cbAnalyseHiddenVisuals_Click" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Name="cbAnalyseHiddenVisualsForRow" IsChecked="{Binding AnalyseHiddenVisuals, Mode=OneWay}" Click="cbAnalyseHiddenVisualsForRow_Click" Tag="{Binding ReportId}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="" Width="40">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource IconButtonStyle}" ToolTip="Supprimer" Click="bRemoveReport" Tag="{Binding ReportId}">
+                                <Viewbox Width="14" Height="14">
+                                    <Path Fill="White" Data="M6,19A2,2 0 0,0 8,21 H16 A2,2 0 0,0 18,19 V7 H6 V19 Z M19,4 H15.5 L14.79,3 H9.21 L8.5,4 H5 V6 H19 V4 Z" />
+                                </Viewbox>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="FontWeight" Value="Bold"/>
+                </Style>
+            </DataGrid.Resources>
+        </DataGrid>
+
+        <StackPanel Grid.Row="3">
+            <CheckBox Name="cbShowAdvancedOptions" Content="{DynamicResource ReportSelectionWindow.CheckBox.ShowAdvancedOptions.Content}" Click="cbShowAdvancedOptions_Click"/>
+        </StackPanel>
+
+        <Button Grid.Row="4" Content="{DynamicResource ReportSelectionWindow.Button.StartAnalysis.Content}" Width="100" HorizontalAlignment="Right" Click="bStartAnalysis"/>
+
+    </Grid>
+</Window>

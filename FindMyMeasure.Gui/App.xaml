@@ -1,0 +1,9 @@
+﻿<Application x:Class="FindMyMeasure.Gui.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:FindMyMeasure.Gui"
+             StartupUri="ReportSelectionWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary Source="Resources/StringResources.xaml"/>
+    </Application.Resources>
+</Application>

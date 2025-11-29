@@ -1,0 +1,26 @@
+﻿<Window x:Class="FindMyMeasure.Gui.LoadingProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FindMyMeasure.Gui"
+        mc:Ignorable="d"
+        Title="{DynamicResource LoadingProgressWindow.Title}" Height="300" Width="500">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label Name="lMain" Grid.Row="0" HorizontalAlignment="Center" Margin="10" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Width="Auto" Content="{DynamicResource LoadingProgressWindow.Label.AnalysisInProgress.Content}"/>
+
+        <ProgressBar Grid.Row="1" Name="pbMain" Height="20" Margin="10" IsIndeterminate="False"/>
+
+        <ListBox Grid.Row="2" Name="lbLog" BorderThickness="2" BorderBrush="#DDD" Margin="10" />
+        
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Name="btnOk" Content="OK" Width="80" IsEnabled="False" Click="btnOk_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

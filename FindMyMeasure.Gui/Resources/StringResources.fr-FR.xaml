@@ -1,0 +1,37 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="ReportSelectionWindow.Button.ImportReport.Content">Importer un rapport</system:String>
+    <system:String x:Key="ReportSelectionWindow.Column.SemanticModel.Header">Modèle sémantique</system:String>
+    <system:String x:Key="ReportSelectionWindow.Column.ReportName.Header">Rapport</system:String>
+    <system:String x:Key="ReportSelectionWindow.Column.LoadHiddenPages.Header">Charger les pages cachées</system:String>
+    <system:String x:Key="ReportSelectionWindow.Column.LoadHiddenVisuals.Header">Charger les visuels cachés</system:String>
+    <system:String x:Key="ReportSelectionWindow.CheckBox.ShowAdvancedOptions.Content">Afficher les options avancées</system:String>
+    <system:String x:Key="ReportSelectionWindow.Button.StartAnalysis.Content">Lancer l'analyse</system:String>
+    <system:String x:Key="ReportSelectionWindow.Title">FindMyMeasure - Sélection des rapports</system:String>
+    <system:String x:Key="ReportSelectionWindow.SelectionTextBlock.Text">Importez les rapports que vous souhaitez analyser en cliquant sur le bouton ci-dessous.</system:String>
+
+    <system:String x:Key="MainWindow.Button.ReturnToReportSelection.Content">Retourner à la sélection des rapport</system:String>
+    <system:String x:Key="MainWindow.Label.SemanticModelFilter.Content">Modèle :</system:String>
+    <system:String x:Key="MainWindow.Label.TypeFilter.Content">Type :</system:String>
+    <system:String x:Key="MainWindow.Label.UsageLevelFilter.Content">Usage :</system:String>
+    <system:String x:Key="MainWindow.Column.Name.Header">Nom</system:String>
+    <system:String x:Key="MainWindow.Column.UsageState.Header">Statut</system:String>
+    <system:String x:Key="MainWindow.Column.TableName.Header">Nom table</system:String>
+    <system:String x:Key="MainWindow.Column.Type.Header">Type</system:String>
+    <system:String x:Key="MainWindow.Column.UsageCount.Header"># utilisations</system:String>
+    <system:String x:Key="MainWindow.Column.ReportName.Header">Rapport</system:String>
+    <system:String x:Key="MainWindow.Column.ReportPage.Header">Page</system:String>
+    <system:String x:Key="MainWindow.Column.VisualType.Header">Type de visuel</system:String>
+    <system:String x:Key="MainWindow.Column.VisualName.Header">Nom</system:String>
+    <system:String x:Key="MainWindow.Label.SelectedElement.Content">Veuillez sélectionner un élément dans la grille.</system:String>
+    <system:String x:Key="MainWindow.Label.SelectionDetail.Content">Détails de la sélection :</system:String>
+    <system:String x:Key="MainWindow.TextBlock.SemanticModelDependents.Text">Eléments dépendents dans la couche sémantique :</system:String>
+    <system:String x:Key="MainWindow.TextBlock.VisualDependents.Text">Eléments dépendants dans les visuels :</system:String>
+
+    <system:String x:Key="LoadingProgressWindow.Title">Chargement en cours...</system:String>
+    <system:String x:Key="LoadingProgressWindow.Label.AnalysisInProgress.Content">Analyse en cours ...</system:String>
+
+</ResourceDictionary>
+    
