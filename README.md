@@ -121,3 +121,9 @@ Currently Windows gives a security warning about the program because it is not s
 ## License
 This project is provided under the MIT License. See LICENSE file for details.
 
+## AI use disclosure
+I use the LLMs available in Visual Studio to help with some parts of the software. \
+I used it more specificaly to code the GUI with WPF, and I used it to comment my code in the class library. \
+I did not just vibe code the whole thing
+
+
