@@ -83,11 +83,12 @@ namespace FindMyMeasure.Gui
             lbStats.Items.Add($"Number of Relationships: {selectedSemanticModel.GetRelationships().Count}");
         }
 
-        private void dgUsageRecords_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void dgUsageRecords_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
             // TODO : Split this method into smaller methods
             spDetailsPanel.Visibility = Visibility.Visible;
-            DataGridUsageRecord selectedRecord = (DataGridUsageRecord)dgUsageRecords.SelectedItem;
+            
+            DataGridUsageRecord selectedRecord = (DataGridUsageRecord)dgUsageRecords.SelectedCells[0].Item;
 
             if (selectedRecord == null)
             {

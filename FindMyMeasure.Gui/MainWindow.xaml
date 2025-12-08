@@ -47,7 +47,7 @@
             <ListBox Name="lbStats" MinHeight="200" Margin="0,10,0,0"/>
         </StackPanel>
 
-        <DataGrid Grid.Column="1" Grid.Row="1" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectionChanged="dgUsageRecords_SelectionChanged">
+        <DataGrid Grid.Column="1" Grid.Row="1" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectedCellsChanged="dgUsageRecords_SelectedCellsChanged" SelectionUnit="Cell">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Type}" Width="Auto" MinWidth="100">
                     <DataGridTextColumn.Header>
