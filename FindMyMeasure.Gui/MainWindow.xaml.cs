@@ -1,4 +1,5 @@
 ﻿using FindMyMeasure.Database;
+using FindMyMeasure.Interfaces;
 using FindMyMeasure.PowerBI;
 using System;
 using System.Collections.Generic;
@@ -108,7 +109,7 @@ namespace FindMyMeasure.Gui
                     dgSementicModelDependents.Items.Add(new 
                     { 
                         Type = dependent.GetTargetType(),
-                        Name = dependent.Name,
+                        Name = (dependent is IDataInput) ? $"{dependent.Name} ({((IDataInput)dependent).GetUsageState()})"  : dependent.Name,
                         TableName = (dependent is Measure) ? ((Measure)dependent).ParentTable.Name :
                                 (dependent is Column) ? ((Column)dependent).ParentTable.Name :
                                 (dependent is Relationship) ? ((Relationship)dependent).FromColumn.ParentTable.Name :
