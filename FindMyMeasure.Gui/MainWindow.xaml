@@ -102,7 +102,11 @@
             <StackPanel Name="spDetailsPanel" Visibility="Collapsed">
 
                 <TextBlock Name="tbDescription" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="Collapsed" />
-                <TextBlock Name="tbExpression" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="Collapsed"/>
+
+                <ScrollViewer MaxHeight="200">
+                    <TextBlock Name="tbExpression" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="Collapsed"/>
+                </ScrollViewer>
+                
                 <TextBlock TextWrapping="Wrap" Margin="0,10,0,0" Text="{DynamicResource MainWindow.TextBlock.SemanticModelDependents.Text}" />
 
                 <DataGrid Name="dgSementicModelDependents" Margin="0,10,0,0" IsReadOnly="True" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">
