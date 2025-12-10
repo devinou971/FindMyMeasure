@@ -87,13 +87,12 @@ namespace FindMyMeasure.Gui
         {
             // TODO : Split this method into smaller methods
             spDetailsPanel.Visibility = Visibility.Visible;
-            
+
+            if(dgUsageRecords.SelectedCells.Count == 0)
+                return;
+
             DataGridUsageRecord selectedRecord = (DataGridUsageRecord)dgUsageRecords.SelectedCells[0].Item;
 
-            if (selectedRecord == null)
-            {
-                return;
-            }
             
             lbSelectedElementName.Content = $"{selectedRecord.Type} : {selectedRecord.Name} - {selectedRecord.UsageState}({selectedRecord.NbOfUsage})";
             
