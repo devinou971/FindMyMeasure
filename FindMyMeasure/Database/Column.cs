@@ -1,4 +1,5 @@
-﻿using FindMyMeasure.Interfaces;
+﻿using FindMyMeasure.Enums;
+using FindMyMeasure.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

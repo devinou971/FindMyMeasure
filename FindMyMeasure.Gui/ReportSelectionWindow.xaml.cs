@@ -1,4 +1,5 @@
 ﻿using FindMyMeasure.Database;
+using FindMyMeasure.Enums;
 using FindMyMeasure.Gui.Exceptions;
 using FindMyMeasure.PowerBI;
 using Microsoft.Win32;

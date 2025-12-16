@@ -142,6 +142,7 @@
     <Compile Include="Database\Relationship.cs" />
     <Compile Include="Database\SemanticModel.cs" />
     <Compile Include="Database\Table.cs" />
+    <Compile Include="Enums\UsageState.cs" />
     <Compile Include="Interfaces\IDataInput.cs" />
     <Compile Include="Interfaces\IMissingColumnWarningSubscriber.cs" />
     <Compile Include="Interfaces\IMissingMeasureWarningSubscriber.cs" />
