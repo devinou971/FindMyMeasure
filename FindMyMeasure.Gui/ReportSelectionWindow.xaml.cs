@@ -185,6 +185,11 @@ namespace FindMyMeasure.Gui
                     UsageState usageState = column.GetUsageState();
                     usageRecords.Add(new DataGridUsageRecord(column, semanticModel.Name));
                 }
+                foreach(var hierarchy in semanticModel.GetHierarchies())
+                {
+                    UsageState usageState = hierarchy.GetUsageState();
+                    usageRecords.Add(new DataGridUsageRecord(hierarchy, semanticModel.Name));
+                }
             }
             return usageRecords;
         }
