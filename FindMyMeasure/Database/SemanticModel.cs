@@ -17,6 +17,7 @@ namespace FindMyMeasure.Database
         private HashSet<Table> _tables = new HashSet<Table>();
         private HashSet<Column> _columns = new HashSet<Column>();
         private HashSet<Measure> _measures = new HashSet<Measure>();
+        private HashSet<Hierarchy> _hierarchies = new HashSet<Hierarchy>();
         private HashSet<Relationship> _relationships = new HashSet<Relationship>();
         private RunMode _currentRunMode;
 
@@ -107,6 +108,7 @@ namespace FindMyMeasure.Database
                 this.LoadTables(adomdConnection);
                 this.LoadColumns(adomdConnection);
                 this.LoadMeasures(adomdConnection);
+                this.LoadHierachies(adomdConnection);
                 this.LoadRelationships(adomdConnection);
                 this.LoadDependencies(adomdConnection);
             } catch
@@ -229,6 +231,36 @@ namespace FindMyMeasure.Database
             }
         }
 
+        private void LoadHierachies(AdomdConnection adomdConnection)
+        {
+            try
+            {
+                AdomdCommand getHierarchiesCommand = adomdConnection.CreateCommand();
+                getHierarchiesCommand.CommandText = "select * from $SYSTEM.TMSCHEMA_HIERARCHIES";
+                AdomdDataReader hierarchyRecords = getHierarchiesCommand.ExecuteReader();
+                foreach (var hierarchyRecord in hierarchyRecords)
+                {
+                    ulong tableId = (ulong)hierarchyRecord.GetValue(1);
+                    ulong hierarchyId = (ulong)hierarchyRecord.GetValue(0);
+                    string hierarchyName = hierarchyRecord.GetString(2);
+
+                    if (this.TryFindTableById(tableId, out Table table))
+                    {
+                        Hierarchy hierarchy = new Hierarchy(hierarchyId, hierarchyName, table);
+                        table.AddHierarchy(hierarchy);
+                        this._hierarchies.Add(hierarchy);
+                    }
+                    else
+                        throw new Exception("Could not find the table " + tableId + " for hierarchy " + hierarchyName);
+                }
+                hierarchyRecords.Close();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         /// <summary>
         /// Loads all relationships from the semantic model using the TMSCHEMA_RELATIONSHIPS system view.
         /// Relationships connect columns and define table cardinality.
@@ -278,19 +310,17 @@ namespace FindMyMeasure.Database
         /// <exception cref="Exception">Thrown if the query fails or a referenced object cannot be found.</exception>
         private void LoadDependencies(AdomdConnection adomdConnection)
         {
-            try
-            {
+            try {
                 AdomdCommand getDependenciesCommand = adomdConnection.CreateCommand();
                 // Query only dependencies between data model objects (columns, measures, calculated tables)
                 getDependenciesCommand.CommandText = @"
-                    select * from $SYSTEM.DISCOVER_CALC_DEPENDENCY
-                    WHERE (OBJECT_TYPE = 'CALC_COLUMN' or OBJECT_TYPE = 'MEASURE' or OBJECT_TYPE = 'CALC_TABLE') 
-                    and (REFERENCED_OBJECT_TYPE = 'CALC_COLUMN' or REFERENCED_OBJECT_TYPE = 'COLUMN' or REFERENCED_OBJECT_TYPE = 'MEASURE')
-                "; 
+                    select* from $SYSTEM.DISCOVER_CALC_DEPENDENCY
+                    WHERE(OBJECT_TYPE = 'CALC_COLUMN' or OBJECT_TYPE = 'MEASURE' or OBJECT_TYPE = 'CALC_TABLE' or OBJECT_TYPE = 'HIERARCHY')
+                    and(REFERENCED_OBJECT_TYPE = 'CALC_COLUMN' or REFERENCED_OBJECT_TYPE = 'COLUMN' or REFERENCED_OBJECT_TYPE = 'MEASURE' or REFERENCED_OBJECT_TYPE = 'ATTRIBUTE_HIERARCHY')
+                ";
                 AdomdDataReader dependencyRecords = getDependenciesCommand.ExecuteReader();
 
-                foreach (var dependencyRecord in dependencyRecords)
-                {
+                foreach (var dependencyRecord in dependencyRecords) {
                     // The object that has the dependency (the one doing the referencing)
                     string objectType = dependencyRecord.GetString(1);
                     string tableName = dependencyRecord.GetString(2);
@@ -301,24 +331,32 @@ namespace FindMyMeasure.Database
                     string referencedTableName = dependencyRecord.GetString(6);
                     string referencedObjectName = dependencyRecord.GetString(7);
 
-                    // Find the referenced object (the dependency source)
-                    IDataInput dataInput;
-                    if (this.TryFindColumnByName(referencedObjectName, referencedTableName, out Column dependencyCol))
-                        dataInput = dependencyCol as IDataInput;
-                    else if (this.TryFindMeasureByName(referencedObjectName, out FindMyMeasure.Database.Measure dependencyMeasure))
-                        dataInput = dependencyMeasure as IDataInput;
-                    else
+                    IDataInput dataInput = null; // => This is the dependency source
+
+                    if (new List<string> { "CALC_COLUMN", "COLUMN", "ATTRIBUTE_HIERARCHY" }.Contains(referencedObjectType))
+                    {
+                        if (this.TryFindColumnByName(referencedObjectName, referencedTableName, out Column dependencyCol))
+                            dataInput = dependencyCol as IDataInput;
+                    } else if (referencedObjectType == "MEASURE") {
+                        if (this.TryFindMeasureByName(referencedObjectName, out FindMyMeasure.Database.Measure dependencyMeasure))
+                            dataInput = dependencyMeasure as IDataInput;
+                    } 
+
+                    if(dataInput == null)
                         throw new Exception("Couldn't find dependency " + referencedObjectType + " : " + referencedTableName + "." + referencedObjectName);
 
-                    // Find the object that uses the dependency (the consumer)
-                    IModelReferenceTarget dataOutput;
-                    if (this.TryFindColumnByName(objectName, tableName, out Column column))
+                    IModelReferenceTarget dataOutput = null; // => This is the dependency target. Or the dependent. It need the source to exist
+
+                    if(objectType ==  "CALC_COLUMN" && this.TryFindColumnByName(objectName, tableName, out Column column))
                         dataOutput = column as IModelReferenceTarget;
-                    else if (this.TryFindMeasureByName(objectName, out FindMyMeasure.Database.Measure measure))
+                    else if (objectType == "MEASURE" && this.TryFindMeasureByName(objectName, out FindMyMeasure.Database.Measure measure))
                         dataOutput = measure as IModelReferenceTarget;
-                    else if (this.TryFindTableByName(objectName, out Table table))
+                    else if(objectType == "CALC_TABLE" && this.TryFindTableByName(objectName, out Table table))
                         dataOutput = table as IModelReferenceTarget;
-                    else
+                    else if (objectType == "HIERARCHY" && this.TryFindHierarchyByName(objectName, tableName, out Hierarchy hierarchy))
+                        dataOutput = hierarchy as IModelReferenceTarget;
+
+                    if (dataOutput == null)
                         throw new Exception("Couldn't find " + objectType + " : " + tableName + "." + objectName + " during dependency building");
 
                     // Register the dependency relationship
@@ -326,8 +364,7 @@ namespace FindMyMeasure.Database
                 }
                 dependencyRecords.Close();
             }
-            catch
-            {
+            catch{
                 throw;
             }
         }
@@ -406,6 +443,22 @@ namespace FindMyMeasure.Database
         }
 
         /// <summary>
+        /// Attempts to find or create a hierarchy by name.
+        /// In disconnected mode, creates the hierarchy if it doesn't exist.
+        /// </summary>
+        /// <param name="name">The name of the hierarchy.</param>
+        /// <param name="hierarchy">The hierarchy if found or created; otherwise null.</param>
+        /// <returns>True if the hierarchy was found or created; otherwise false.</returns>
+        public bool TryFindHierarchyByName(String name, string tableName, out Hierarchy hierarchy)
+        {
+            // In disconnected mode, auto-create missing measures
+            if (this._currentRunMode == RunMode.DisconnectedMode)
+                this._hierarchies.Add(new Hierarchy(0, name, null));
+            hierarchy = this._hierarchies.FirstOrDefault(h => h.Name == name && h.ParentTable.Name == tableName);
+            return hierarchy != null;
+        }
+
+        /// <summary>
         /// Gets all tables in this semantic model.
         /// </summary>
         public HashSet<Table> GetTables() => this._tables;
@@ -419,6 +472,11 @@ namespace FindMyMeasure.Database
         /// Gets all columns in this semantic model.
         /// </summary>
         public HashSet<Column> GetColumns() => this._columns;
+
+        /// <summary>
+        /// Gets all hierarchies in this semantic model
+        /// </summary>
+        public HashSet<Hierarchy> GetHierarchies() => this._hierarchies;
 
         /// <summary>
         /// Gets all relationships in this semantic model.

@@ -1,4 +1,5 @@
 ﻿using FindMyMeasure.Database;
+using FindMyMeasure.Enums;
 using FindMyMeasure.Gui.Exceptions;
 using FindMyMeasure.PowerBI;
 using Microsoft.Win32;
@@ -183,6 +184,11 @@ namespace FindMyMeasure.Gui
                 {
                     UsageState usageState = column.GetUsageState();
                     usageRecords.Add(new DataGridUsageRecord(column, semanticModel.Name));
+                }
+                foreach(var hierarchy in semanticModel.GetHierarchies())
+                {
+                    UsageState usageState = hierarchy.GetUsageState();
+                    usageRecords.Add(new DataGridUsageRecord(hierarchy, semanticModel.Name));
                 }
             }
             return usageRecords;

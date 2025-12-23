@@ -138,10 +138,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\Column.cs" />
+    <Compile Include="Database\Hierarchy.cs" />
     <Compile Include="Database\Measure.cs" />
     <Compile Include="Database\Relationship.cs" />
     <Compile Include="Database\SemanticModel.cs" />
     <Compile Include="Database\Table.cs" />
+    <Compile Include="Enums\UsageState.cs" />
     <Compile Include="Interfaces\IDataInput.cs" />
     <Compile Include="Interfaces\IMissingColumnWarningSubscriber.cs" />
     <Compile Include="Interfaces\IMissingMeasureWarningSubscriber.cs" />
@@ -159,6 +161,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WarningClasses\AnalysisWarning.cs" />
     <Compile Include="WarningClasses\MissingColumnWarning.cs" />
+    <Compile Include="WarningClasses\MissingHierarchyWarning.cs" />
     <Compile Include="WarningClasses\MissingMeasureWarning.cs" />
   </ItemGroup>
   <ItemGroup>

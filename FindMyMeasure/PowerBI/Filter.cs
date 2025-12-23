@@ -71,6 +71,7 @@ namespace FindMyMeasure.PowerBI
         /// <exception cref="ArgumentNullException">Thrown when filterObject is null.</exception>
         private static Filter LoadFromJson(JsonObject filterObject, PowerBINode parent, SemanticModel semanticModel)
         {
+            // TODO : Split this method into smaller parts
             if (filterObject is null)
                 throw new ArgumentNullException(nameof(filterObject), "the filter node is null.");
 
@@ -125,6 +126,28 @@ namespace FindMyMeasure.PowerBI
                         }
                     }
                 }
+                // Extract and resolve hierarchy references
+                if (expressionNode.TryFindNodesByPropertyName("Hierarchy", out HashSet<JsonNode> hierarchyNodes))
+                {
+                    foreach (JsonNode hierarchyNode in hierarchyNodes)
+                    {
+                        string hierarchyName = hierarchyNode["Hierarchy"].ToString();
+                        string tableName = hierarchyNode["Expression"]["SourceRef"]["Entity"].ToString();
+                        // Try to find the measure in the semantic model
+                        if (!semanticModel.TryFindHierarchyByName(hierarchyName, tableName, out Hierarchy hierarchy))
+                        {
+                            // Publish warning if measure not found
+                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingHierarchyWarning(filter, hierarchyName, tableName));
+                        }
+                        else
+                        {
+                            // Register the dependency relationship
+                            filter.AddDataInput(hierarchy);
+                            hierarchy.AddDependent(filter);
+                        }
+                    }
+                }
+
             }
             return filter;
         }

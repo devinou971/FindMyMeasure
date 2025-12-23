@@ -14,6 +14,7 @@ namespace FindMyMeasure.Database
 
         private HashSet<Measure> _measures = new HashSet<Measure>();
         private HashSet<Column> _columns = new HashSet<Column>();
+        private HashSet<Hierarchy> _hierarchies = new HashSet<Hierarchy>();
 
         public string Name { get => _name; }
         public ulong TableId { get => _tableId; }
@@ -53,6 +54,16 @@ namespace FindMyMeasure.Database
         public bool AddColumn(Column column)
         {
             return this._columns.Add(column);
+        }
+
+        /// <summary>
+        /// Adds a hierarchy to this table.
+        /// </summary>
+        /// <param name="hierarchy">The hierarchy to add.</param>
+        /// <returns>True if the hierarchy was added; false if it already existed.</returns>
+        public bool AddHierarchy(Hierarchy hierarchy)
+        {
+            return this._hierarchies.Add(hierarchy);
         }
 
         /// <summary>

@@ -86,6 +86,7 @@ namespace FindMyMeasure.PowerBI
 
         private static void LoadMeasuresNColumnsFromJson(JsonNode prototypeQueryNode, Visual visual)
         {
+            // TODO : Split this method into smaller parts / refactor to make it smaller
             JsonNode selectNodes = prototypeQueryNode["Select"] ?? throw new ArgumentException("Visual node has no config.singleVisual.prototypeQuery.Select subnode");
             JsonNode fromNodes = prototypeQueryNode["From"] ?? throw new ArgumentException("Visual node has no config.singleVisual.prototypeQuery.From subnode");
             SemanticModel semanticModel = visual.GetReportPage().GetPowerBIReport().GetSemanticModel();
@@ -96,10 +97,8 @@ namespace FindMyMeasure.PowerBI
 
             foreach (var node in selectNodes.AsArray())
             {
-                HashSet<JsonNode> columnNodes;
-                HashSet<JsonNode> measureNodes;
 
-                if (node.TryFindNodesByPropertyName("Measure", out measureNodes))
+                if (node.TryFindNodesByPropertyName("Measure", out HashSet<JsonNode> measureNodes))
                 {
                     foreach (JsonNode measureNode in measureNodes)
                     {
@@ -117,7 +116,7 @@ namespace FindMyMeasure.PowerBI
                         }
                     }
                 }
-                else if (node.TryFindNodesByPropertyName("Column", out columnNodes))
+                else if (node.TryFindNodesByPropertyName("Column", out HashSet<JsonNode> columnNodes))
                 {
                     foreach (JsonNode columnNode in columnNodes)
                     {
@@ -131,6 +130,26 @@ namespace FindMyMeasure.PowerBI
                         {
                             visual.AddDataInput(column);
                             column.AddDependent(visual);
+                        }
+                    }
+                }
+                // Extract and resolve hierarchy references
+                else if (node.TryFindNodesByPropertyName("Hierarchy", out HashSet<JsonNode> hierarchyNodes))
+                {
+                    foreach (JsonNode hierarchyNode in hierarchyNodes)
+                    {
+                        string hierarchyName = hierarchyNode["Hierarchy"].ToString();
+                        string tableName = tableNameCorrespondance[hierarchyNode["Expression"]["SourceRef"]["Source"].ToString()];
+                        // Try to find the measure in the semantic model
+                        if (!semanticModel.TryFindHierarchyByName(hierarchyName, tableName, out Hierarchy hierarchy))
+                        {
+                            // Publish warning if measure not found
+                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingHierarchyWarning(visual, hierarchyName, tableName));
+                        }
+                        else
+                        {
+                            visual.AddDataInput(hierarchy);
+                            hierarchy.AddDependent(visual);
                         }
                     }
                 }

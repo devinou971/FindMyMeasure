@@ -92,7 +92,6 @@ namespace FindMyMeasure.Gui
                 return;
 
             DataGridUsageRecord selectedRecord = (DataGridUsageRecord)dgUsageRecords.SelectedCells[0].Item;
-
             
             lbSelectedElementName.Content = $"{selectedRecord.Type} : {selectedRecord.Name} - {selectedRecord.UsageState}({selectedRecord.NbOfUsage})";
             
@@ -104,15 +103,14 @@ namespace FindMyMeasure.Gui
             dgReportDependents.Items.Clear();
             foreach (var dependent in dependents)
             {
-                if (dependent is Measure || dependent is Table || dependent is Column || dependent is Relationship)
+                if (dependent is IDataInput || dependent is Table || dependent is Relationship)
                 {
                     dgSementicModelDependents.Items.Add(new 
                     { 
                         Type = dependent.GetTargetType(),
                         Name = (dependent is IDataInput) ? $"{dependent.Name} ({((IDataInput)dependent).GetUsageState()})"  : dependent.Name,
-                        TableName = (dependent is Measure) ? ((Measure)dependent).ParentTable.Name :
-                                (dependent is Column) ? ((Column)dependent).ParentTable.Name :
-                                (dependent is Relationship) ? ((Relationship)dependent).FromColumn.ParentTable.Name :
+                        TableName = (dependent is IDataInput) ? ((IDataInput)dependent).ParentTable.Name :
+                                (dependent is Relationship) ? ((Relationship)dependent).FromColumn.ParentTable.Name + " -> " + ((Relationship)dependent).ToColumn.ParentTable.Name :
                                 ""
                     });
                 }

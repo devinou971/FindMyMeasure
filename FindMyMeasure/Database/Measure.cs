@@ -1,4 +1,5 @@
-﻿using FindMyMeasure.Interfaces;
+﻿using FindMyMeasure.Enums;
+using FindMyMeasure.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +9,7 @@ namespace FindMyMeasure.Database
     /// <summary>
     /// Represents the usage state of a measure or column in a semantic model and reports.
     /// </summary>
-    public enum UsageState
-    {
-        /// <summary>The measure/column is not used anywhere.</summary>
-        Unused,
-        /// <summary>The measure/column is used directly or indirectly in a report or relationship.</summary>
-        Used,
-        /// <summary>The measure/column is used by other measures/columns, but all of those are Unused.</summary>
-        UsedByUnused
-    }
+    
 
     /// <summary>
     /// Represents a measure in a semantic model with dependency tracking.
