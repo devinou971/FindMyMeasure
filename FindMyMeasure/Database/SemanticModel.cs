@@ -438,7 +438,7 @@ namespace FindMyMeasure.Database
         /// <returns>True if the column was found; otherwise false.</returns>
         public bool TryFindColumnById(ulong columnId, out Column column)
         {
-            column = this._columns.FirstOrDefault(c => c.ColumnId == columnId);
+            column = this._columns.FirstOrDefault(c => c.Id == columnId);
             return column != null;
         }
 
