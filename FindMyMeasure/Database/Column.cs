@@ -19,7 +19,7 @@ namespace FindMyMeasure.Database
         /// <param name="expression">The DAX expression for calculated columns, or null for regular columns.</param>
         /// <param name="table">The table that contains this column.</param>
         public Column(ulong columnId, string columnName, string expression, Table table) 
-            : base(columnId, columnName, string.IsNullOrEmpty(expression) ? "Column" : "CalculatedColumn", table)
+            : base(columnId, columnName, string.IsNullOrEmpty(expression) ? "Column" : "CalculatedColumn", expression, table)
         {
         }
 
