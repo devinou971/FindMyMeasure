@@ -19,6 +19,21 @@ namespace FindMyMeasure.PowerBI
         private static int NextId = 0;
         private int _id;
 
+        public string Type { get {
+                switch (this._parent)
+                {
+                    case PowerBIReport _:
+                        return "PowerBI Report Filter";
+                    case ReportPage _:
+                        return "PowerBI Report Page Filter";
+                    case Visual _:
+                        return "PowerBI Visual Filter";
+                    default:
+                        return "PowerBI Filter";
+                };
+            
+            } }
+
         private HashSet<IDataInput> dataInputs = new HashSet<IDataInput>();
 
         public override string Name { get {
@@ -228,7 +243,6 @@ namespace FindMyMeasure.PowerBI
         /// <summary>
         /// Gets all data inputs (columns and measures) that this filter depends on.
         /// </summary>
-        /// <returns>A HashSet of IDataInput objects.</returns>
         public HashSet<IDataInput> GetDataInputs()
         {
             return this.dataInputs;
@@ -249,25 +263,6 @@ namespace FindMyMeasure.PowerBI
                     return $"Visual Filter '{_id}' from visual '{this._parent.Name}' in page {((Visual)this._parent).GetReportPage().Name}";
                 default:
                     return $"Filter '{_id}' from '{this._parent.Name}'";
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of target this filter represents (e.g., "PowerBI Report Filter").
-        /// </summary>
-        /// <returns>A string describing the filter type.</returns>
-        public string GetTargetType()
-        {
-            switch (this._parent)
-            {
-                case PowerBIReport _:
-                    return "PowerBI Report Filter";
-                case ReportPage _:
-                    return "PowerBI Report Page Filter";
-                case Visual _:
-                    return "PowerBI Visual Filter";
-                default:
-                    return "PowerBI Filter";
             }
         }
     }

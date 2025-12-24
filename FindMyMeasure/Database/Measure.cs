@@ -33,10 +33,5 @@ namespace FindMyMeasure.Database
         {
             return this.Name.GetHashCode();
         }
-
-        public override string GetTargetType()
-        {
-            return "Measure";
-        }
     }
 }

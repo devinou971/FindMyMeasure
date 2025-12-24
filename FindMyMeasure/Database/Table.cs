@@ -19,6 +19,8 @@ namespace FindMyMeasure.Database
         public string Name { get => _name; }
         public ulong TableId { get => _tableId; }
 
+        public string Type => "Table";
+
         /// <summary>
         /// Initializes a new instance of the Table class.
         /// </summary>
@@ -83,14 +85,6 @@ namespace FindMyMeasure.Database
         public bool Equals(Table other)
         {
             return other.Name == this.Name && other.TableId == this.TableId;
-        }
-
-        /// <summary>
-        /// Gets the target type identifier for this object ("Table").
-        /// </summary>
-        public string GetTargetType()
-        {
-            return "Table";
         }
     }
 }

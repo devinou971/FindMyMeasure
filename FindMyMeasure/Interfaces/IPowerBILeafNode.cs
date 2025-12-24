@@ -5,7 +5,7 @@ namespace FindMyMeasure.Interfaces
     public interface IPowerBILeafNode
     {
         string Name { get; }
+        string Type { get; }
         bool AddDataInput(IDataInput dataInput);
-        HashSet<IDataInput> GetDataInputs();
     }
 }

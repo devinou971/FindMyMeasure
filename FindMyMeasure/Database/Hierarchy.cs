@@ -13,10 +13,5 @@ namespace FindMyMeasure.Database
         public Hierarchy(ulong hierarchyId, string name, Table table) 
             : base(hierarchyId, name, "Hierarchy", table) 
         { }
-
-        public override string GetTargetType()
-        {
-            return this._type;
-        }
     }
 }

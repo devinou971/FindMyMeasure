@@ -135,7 +135,7 @@ namespace ExportUsages
                         // Item is used - generate a CSV row for each usage
                         foreach (var dependent in dataInput.GetDependents())
                         {
-                            var usedInType = dependent.GetTargetType();
+                            var usedInType = dependent.Type;
                             var usedInName = dependent.Name;
                             var usedInTable = (dependent is IDataInput) ? ((IDataInput)dependent).ParentTable.Name : "";
                             var usedInReport = "";

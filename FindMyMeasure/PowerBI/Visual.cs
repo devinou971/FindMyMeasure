@@ -19,6 +19,8 @@ namespace FindMyMeasure.PowerBI
         public override string Name => this._name;
         public string VisualType => this._visualType;
 
+        public string Type { get { return this._visualType; } }
+
         private Visual(string name, String visualType, ReportPage parentPage)
         {
             this._name = name;
@@ -169,11 +171,6 @@ namespace FindMyMeasure.PowerBI
         public ReportPage GetReportPage()
         {
             return this._parentPage;
-        }
-
-        public string GetTargetType()
-        {
-            return this.VisualType;
         }
     }
 }

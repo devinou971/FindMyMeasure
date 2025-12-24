@@ -89,7 +89,6 @@ namespace FindMyMeasure.Database
         /// <returns>A HashSet of IModelReferenceTarget objects.</returns>
         public HashSet<IModelReferenceTarget> GetDependents() => this._usages;
 
-        abstract public string GetTargetType();
 
         public override string ToString()
         {

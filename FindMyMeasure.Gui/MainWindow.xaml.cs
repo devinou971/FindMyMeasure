@@ -107,7 +107,7 @@ namespace FindMyMeasure.Gui
                 {
                     dgSementicModelDependents.Items.Add(new 
                     { 
-                        Type = dependent.GetTargetType(),
+                        Type = dependent.Type,
                         Name = (dependent is IDataInput) ? $"{dependent.Name} ({((IDataInput)dependent).GetUsageState()})"  : dependent.Name,
                         TableName = (dependent is IDataInput) ? ((IDataInput)dependent).ParentTable.Name :
                                 (dependent is Relationship) ? ((Relationship)dependent).FromColumn.ParentTable.Name + " -> " + ((Relationship)dependent).ToColumn.ParentTable.Name :
@@ -140,7 +140,7 @@ namespace FindMyMeasure.Gui
                     }
                     dgReportDependents.Items.Add(new 
                     { 
-                        Type = dependent.GetTargetType(),
+                        Type = dependent.Type,
                         Name = ((FindMyMeasure.Interfaces.IPowerBILeafNode)dependent).Name,
                         ReportName = reportName,
                         PageName = pageName

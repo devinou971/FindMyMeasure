@@ -3,6 +3,6 @@
     public interface IModelReferenceTarget
     {
         string Name { get; }
-        string GetTargetType();
+        string Type { get; }
     }
 }

@@ -41,13 +41,5 @@ namespace FindMyMeasure.Database
         {
             return (this._table.ToString() + "." + this._name).GetHashCode();
         }
-
-        /// <summary>
-        /// Gets the target type identifier for this column ("Column" or "CalculatedColumn").
-        /// </summary>
-        public override string GetTargetType()
-        {
-            return this._type.ToString();
-        }
     }
 }

@@ -33,6 +33,8 @@ namespace FindMyMeasure.Database
         /// </summary>
         public bool IsActive => _isActive;
 
+        public string Type => "Relationship";
+
         /// <summary>
         /// Initializes a new instance of the Relationship class.
         /// </summary>
@@ -73,14 +75,6 @@ namespace FindMyMeasure.Database
         public override int GetHashCode()
         {
             return this._name.GetHashCode();
-        }
-
-        /// <summary>
-        /// Gets the target type identifier for this object.
-        /// </summary>
-        public string GetTargetType()
-        {
-            return "Relationship";
         }
     }
 }
