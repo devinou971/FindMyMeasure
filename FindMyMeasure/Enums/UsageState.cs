@@ -10,9 +10,10 @@ namespace FindMyMeasure.Enums
     {
         /// <summary>The measure/column is not used anywhere.</summary>
         Unused,
-        /// <summary>The measure/column is used directly or indirectly in a report or relationship.</summary>
-        Used,
         /// <summary>The measure/column is used by other measures/columns, but all of those are Unused.</summary>
-        UsedByUnused
+        UsedByUnused,
+        /// <summary>The measure/column is used directly or indirectly in a report or relationship.</summary>
+        Used
+        
     }
 }

@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\Column.cs" />
+    <Compile Include="Database\DatabaseArtifact.cs" />
     <Compile Include="Database\Hierarchy.cs" />
     <Compile Include="Database\Measure.cs" />
     <Compile Include="Database\Relationship.cs" />

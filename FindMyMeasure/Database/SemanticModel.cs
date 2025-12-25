@@ -15,10 +15,8 @@ namespace FindMyMeasure.Database
         private string _name;
         private string _connectionString;
         private HashSet<Table> _tables = new HashSet<Table>();
-        private HashSet<Column> _columns = new HashSet<Column>();
-        private HashSet<Measure> _measures = new HashSet<Measure>();
-        private HashSet<Hierarchy> _hierarchies = new HashSet<Hierarchy>();
         private HashSet<Relationship> _relationships = new HashSet<Relationship>();
+        private HashSet<DatabaseArtifact> _databaseArtifacts = new HashSet<DatabaseArtifact>();
         private RunMode _currentRunMode;
 
         /// <summary>
@@ -178,7 +176,7 @@ namespace FindMyMeasure.Database
                     {
                         Column column = new Column(columnId, columnName, expression, table);
                         table.AddColumn(column);
-                        this._columns.Add(column);
+                        this._databaseArtifacts.Add(column);
                     }
                     else
                     {
@@ -218,7 +216,7 @@ namespace FindMyMeasure.Database
                     {
                         Measure measure = new Measure(measureId, measureName, measureFormula, table);
                         table.AddMeasure(measure);
-                        this._measures.Add(measure);
+                        this._databaseArtifacts.Add(measure);
                     }
                     else
                         throw new Exception("Could not find the table " + tableId + " for measure " + measureName);
@@ -248,7 +246,7 @@ namespace FindMyMeasure.Database
                     {
                         Hierarchy hierarchy = new Hierarchy(hierarchyId, hierarchyName, table);
                         table.AddHierarchy(hierarchy);
-                        this._hierarchies.Add(hierarchy);
+                        this._databaseArtifacts.Add(hierarchy);
                     }
                     else
                         throw new Exception("Could not find the table " + tableId + " for hierarchy " + hierarchyName);
@@ -397,6 +395,16 @@ namespace FindMyMeasure.Database
             return table != null;
         }
 
+        public bool TryFindArtifactByName(string artifactType, string artifactName, string tableName, out DatabaseArtifact artifact)
+        {
+            if(this._currentRunMode == RunMode.DisconnectedMode)
+            {
+                this._databaseArtifacts.Add(new DatabaseArtifact(0, artifactName, artifactType, null));
+            }
+            artifact = this._databaseArtifacts.FirstOrDefault(a=> a.Name == artifactName && a.Type == artifactType && a.ParentTable.Name == tableName);
+            return artifact != null;
+        }
+
         /// <summary>
         /// Attempts to find or create a measure by name.
         /// In disconnected mode, creates the measure if it doesn't exist.
@@ -408,8 +416,8 @@ namespace FindMyMeasure.Database
         {
             // In disconnected mode, auto-create missing measures
             if (this._currentRunMode == RunMode.DisconnectedMode)
-                this._measures.Add(new Measure(0, name, null, null));
-            measure = this._measures.FirstOrDefault(m => m.Name == name);
+                this._databaseArtifacts.Add(new Measure(0, name, null, null));
+            measure = (Measure)this._databaseArtifacts.FirstOrDefault(m => m is Measure && m.Name == name);
             return measure != null;
         }
 
@@ -425,8 +433,8 @@ namespace FindMyMeasure.Database
         {
             // In disconnected mode, auto-create missing columns
             if (this._currentRunMode == RunMode.DisconnectedMode)
-                this._columns.Add(new Column(0, name, new Table(tableName)));
-            column = this._columns.FirstOrDefault(c => c.Name == name && c.ParentTable.Name == tableName);
+                this._databaseArtifacts.Add(new Column(0, name, new Table(tableName)));
+            column = (Column)this._databaseArtifacts.FirstOrDefault(c => c is Column && c.Name == name && c.ParentTable.Name == tableName);
             return column != null;
         }
 
@@ -438,7 +446,7 @@ namespace FindMyMeasure.Database
         /// <returns>True if the column was found; otherwise false.</returns>
         public bool TryFindColumnById(ulong columnId, out Column column)
         {
-            column = this._columns.FirstOrDefault(c => c.ColumnId == columnId);
+            column = (Column)this._databaseArtifacts.FirstOrDefault(c => c.Id == columnId);
             return column != null;
         }
 
@@ -453,8 +461,12 @@ namespace FindMyMeasure.Database
         {
             // In disconnected mode, auto-create missing measures
             if (this._currentRunMode == RunMode.DisconnectedMode)
-                this._hierarchies.Add(new Hierarchy(0, name, null));
-            hierarchy = this._hierarchies.FirstOrDefault(h => h.Name == name && h.ParentTable.Name == tableName);
+            {
+                //this._hierarchies.Add(new Hierarchy(0, name, null));
+                this._databaseArtifacts.Add(new Hierarchy(0, name, null));
+            }
+            //hierarchy = this._hierarchies.FirstOrDefault(h => h.Name == name && h.ParentTable.Name == tableName);
+            hierarchy = (Hierarchy)this._databaseArtifacts.FirstOrDefault(h => h is Hierarchy && h.Name == name && h.ParentTable.Name == tableName);
             return hierarchy != null;
         }
 
@@ -466,17 +478,17 @@ namespace FindMyMeasure.Database
         /// <summary>
         /// Gets all measures in this semantic model.
         /// </summary>
-        public HashSet<Measure> GetMeasures() => this._measures;
+        public HashSet<Measure> GetMeasures() => new HashSet<Measure>(this._databaseArtifacts.Where(x => x is Measure).Cast<Measure>());
 
         /// <summary>
         /// Gets all columns in this semantic model.
         /// </summary>
-        public HashSet<Column> GetColumns() => this._columns;
+        public HashSet<Column> GetColumns() => new HashSet<Column>(this._databaseArtifacts.Where(x => x is Column).Cast<Column>());
 
         /// <summary>
         /// Gets all hierarchies in this semantic model
         /// </summary>
-        public HashSet<Hierarchy> GetHierarchies() => this._hierarchies;
+        public HashSet<Hierarchy> GetHierarchies() => new HashSet<Hierarchy>(this._databaseArtifacts.Where(x => x is Hierarchy).Cast<Hierarchy>());
 
         /// <summary>
         /// Gets all relationships in this semantic model.

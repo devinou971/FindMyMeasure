@@ -128,14 +128,14 @@ namespace ExportUsages
                     if (numberOfUses == 0)
                     {
                         // Item is not used anywhere
-                        csvLines.Add($"{modelName}{csvDel}{dataInput.Type}{csvDel}{name}{csvDel}{table}{csvDel}{status}{csvDel}{numberOfUses}{csvDel}N/A{csvDel}N/A{csvDel}N/A{csvDel}N/A{csvDel}N/A");
+                        csvLines.Add($"{modelName}{csvDel}{dataInput.Type}{csvDel}{name}{csvDel}{table}{csvDel}{status}{csvDel}{numberOfUses}{csvDel}{csvDel}{csvDel}{csvDel}{csvDel}");
                     } 
                     else
                     {
                         // Item is used - generate a CSV row for each usage
                         foreach (var dependent in dataInput.GetDependents())
                         {
-                            var usedInType = dependent.GetTargetType();
+                            var usedInType = dependent.Type;
                             var usedInName = dependent.Name;
                             var usedInTable = (dependent is IDataInput) ? ((IDataInput)dependent).ParentTable.Name : "";
                             var usedInReport = "";
