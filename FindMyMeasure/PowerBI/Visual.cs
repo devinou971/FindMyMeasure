@@ -81,14 +81,32 @@ namespace FindMyMeasure.PowerBI
             {
                 JsonNode prototypeQueryNode = singleVisualNode["prototypeQuery"];
                 if (prototypeQueryNode != null)
-                    LoadMeasuresNColumnsFromJson(prototypeQueryNode, visual);
+                    LoadArtifactsFromJson(prototypeQueryNode, visual);
             }
             return visual;
         }
 
-        private static void LoadMeasuresNColumnsFromJson(JsonNode prototypeQueryNode, Visual visual)
+        private static HashSet<DatabaseArtifact> ExtractArtifactsFromSelectNode(JsonNode expressionNode, string artifactType, Dictionary<string, string> tableNameCorrespondance, IPowerBILeafNode source, SemanticModel semanticModel)
         {
-            // TODO : Split this method into smaller parts / refactor to make it smaller
+            HashSet<DatabaseArtifact> artifacts = new HashSet<DatabaseArtifact>();
+            if (expressionNode.TryFindNodesByPropertyName(artifactType, out HashSet<JsonNode> artifactNodes))
+            {
+                foreach (JsonNode artifactNode in artifactNodes)
+                {
+                    string nodeName = artifactType == "Hierarchy" ? "Hierarchy" : "Property";
+                    string artifactName = artifactNode[nodeName].ToString();
+                    string tableName = tableNameCorrespondance[artifactNode["Expression"]["SourceRef"]["Source"].ToString()];
+                    if (!semanticModel.TryFindArtifactByName(artifactType, artifactName, tableName, out DatabaseArtifact artifact))
+                        AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingColumnWarning(source, artifactName, tableName));
+                    else
+                        artifacts.Add(artifact);
+                }
+            }
+            return artifacts;
+        }
+
+        private static void LoadArtifactsFromJson(JsonNode prototypeQueryNode, Visual visual)
+        {
             JsonNode selectNodes = prototypeQueryNode["Select"] ?? throw new ArgumentException("Visual node has no config.singleVisual.prototypeQuery.Select subnode");
             JsonNode fromNodes = prototypeQueryNode["From"] ?? throw new ArgumentException("Visual node has no config.singleVisual.prototypeQuery.From subnode");
             SemanticModel semanticModel = visual.GetReportPage().GetPowerBIReport().GetSemanticModel();
@@ -99,61 +117,15 @@ namespace FindMyMeasure.PowerBI
 
             foreach (var node in selectNodes.AsArray())
             {
+                var artifacts = new HashSet<DatabaseArtifact>();
+                artifacts.UnionWith(ExtractArtifactsFromSelectNode(node, "Column", tableNameCorrespondance, visual, semanticModel));
+                artifacts.UnionWith(ExtractArtifactsFromSelectNode(node, "Measure", tableNameCorrespondance, visual, semanticModel));
+                artifacts.UnionWith(ExtractArtifactsFromSelectNode(node, "Hierarchy", tableNameCorrespondance, visual, semanticModel));
 
-                if (node.TryFindNodesByPropertyName("Measure", out HashSet<JsonNode> measureNodes))
+                foreach (var artifact in artifacts)
                 {
-                    foreach (JsonNode measureNode in measureNodes)
-                    {
-                        string measureName = measureNode["Property"].ToString();
-                        string tableName = tableNameCorrespondance[measureNode["Expression"]["SourceRef"]["Source"].ToString()];
-
-                        if (! semanticModel.TryFindMeasureByName(measureName, out Measure measure))
-                        {
-                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingMeasureWarning(visual, measureName, tableName));
-                        }
-                        else
-                        {
-                            visual.AddDataInput(measure);
-                            measure.AddDependent(visual);
-                        }
-                    }
-                }
-                else if (node.TryFindNodesByPropertyName("Column", out HashSet<JsonNode> columnNodes))
-                {
-                    foreach (JsonNode columnNode in columnNodes)
-                    {
-                        string columnName = columnNode["Property"].ToString();
-                        string tableName = tableNameCorrespondance[columnNode["Expression"]["SourceRef"]["Source"].ToString()];
-                        if (!semanticModel.TryFindColumnByName(columnName, tableName, out Column column))
-                        {
-                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingColumnWarning(visual, columnName, tableName));
-                        }
-                        else
-                        {
-                            visual.AddDataInput(column);
-                            column.AddDependent(visual);
-                        }
-                    }
-                }
-                // Extract and resolve hierarchy references
-                else if (node.TryFindNodesByPropertyName("Hierarchy", out HashSet<JsonNode> hierarchyNodes))
-                {
-                    foreach (JsonNode hierarchyNode in hierarchyNodes)
-                    {
-                        string hierarchyName = hierarchyNode["Hierarchy"].ToString();
-                        string tableName = tableNameCorrespondance[hierarchyNode["Expression"]["SourceRef"]["Source"].ToString()];
-                        // Try to find the measure in the semantic model
-                        if (!semanticModel.TryFindHierarchyByName(hierarchyName, tableName, out Hierarchy hierarchy))
-                        {
-                            // Publish warning if measure not found
-                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingHierarchyWarning(visual, hierarchyName, tableName));
-                        }
-                        else
-                        {
-                            visual.AddDataInput(hierarchy);
-                            hierarchy.AddDependent(visual);
-                        }
-                    }
+                    visual.AddDataInput(artifact);
+                    artifact.AddDependent(visual);
                 }
             }
         }

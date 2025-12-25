@@ -76,6 +76,26 @@ namespace FindMyMeasure.PowerBI
             return this._id.GetHashCode();
         }
 
+        private static HashSet<DatabaseArtifact> ExtractArtifactsFromExpressionNode(JsonNode expressionNode, string artifactType, IPowerBILeafNode source, SemanticModel semanticModel)
+        {
+            HashSet <DatabaseArtifact> artifacts = new HashSet <DatabaseArtifact>();
+
+            if (expressionNode.TryFindNodesByPropertyName(artifactType, out HashSet<JsonNode> artifactNodes))
+            {
+                foreach (JsonNode artifactNode in artifactNodes)
+                {
+                    string nodeName = artifactType == "Hierarchy" ? "Hierarchy" : "Property";
+                    string artifactName = artifactNode[nodeName].ToString();
+                    string tableName = artifactNode["Expression"]["SourceRef"]["Entity"].ToString();
+                    if (!semanticModel.TryFindArtifactByName(artifactType, artifactName, tableName, out DatabaseArtifact artifact))
+                        AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingColumnWarning(source, artifactName, tableName));
+                    else
+                        artifacts.Add(artifact);
+                }
+            }
+            return artifacts;
+        }
+
         /// <summary>
         /// Loads a filter from a JSON object and extracts column and measure references.
         /// </summary>
@@ -86,7 +106,6 @@ namespace FindMyMeasure.PowerBI
         /// <exception cref="ArgumentNullException">Thrown when filterObject is null.</exception>
         private static Filter LoadFromJson(JsonObject filterObject, PowerBINode parent, SemanticModel semanticModel)
         {
-            // TODO : Split this method into smaller parts
             if (filterObject is null)
                 throw new ArgumentNullException(nameof(filterObject), "the filter node is null.");
 
@@ -102,67 +121,16 @@ namespace FindMyMeasure.PowerBI
             // Process each expression in the filter
             foreach (var expressionNode in expressionNodes)
             {
-                // Extract and resolve column references
-                if (expressionNode.TryFindNodesByPropertyName("Column", out HashSet<JsonNode> columnNodes))
-                {
-                    foreach (JsonNode columnNode in columnNodes)
-                    {
-                        string columnName = columnNode["Property"].ToString();
-                        string tableName = columnNode["Expression"]["SourceRef"]["Entity"].ToString();
-                        // Try to find the column in the semantic model
-                        if (!semanticModel.TryFindColumnByName(columnName, tableName, out Column column))
-                        {
-                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingColumnWarning(filter, columnName, tableName));
-                        } else {
-                            // Register the dependency relationship
-                            filter.AddDataInput(column);
-                            column.AddDependent(filter);
-                        }
-                    }
-                }
-                // Extract and resolve measure references
-                if (expressionNode.TryFindNodesByPropertyName("Measure", out HashSet<JsonNode> measureNodes))
-                {
-                    foreach (JsonNode measureNode in measureNodes)
-                    {
-                        string measureName = measureNode["Property"].ToString();
-                        string tableName = measureNode["Expression"]["SourceRef"]["Entity"].ToString();
-                        // Try to find the measure in the semantic model
-                        if (!semanticModel.TryFindMeasureByName(measureName, out Measure measure))
-                        {
-                            // Publish warning if measure not found
-                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingMeasureWarning(filter, measureName, tableName));
-                        }
-                        else
-                        {
-                            // Register the dependency relationship
-                            filter.AddDataInput(measure);
-                            measure.AddDependent(filter);
-                        }
-                    }
-                }
-                // Extract and resolve hierarchy references
-                if (expressionNode.TryFindNodesByPropertyName("Hierarchy", out HashSet<JsonNode> hierarchyNodes))
-                {
-                    foreach (JsonNode hierarchyNode in hierarchyNodes)
-                    {
-                        string hierarchyName = hierarchyNode["Hierarchy"].ToString();
-                        string tableName = hierarchyNode["Expression"]["SourceRef"]["Entity"].ToString();
-                        // Try to find the measure in the semantic model
-                        if (!semanticModel.TryFindHierarchyByName(hierarchyName, tableName, out Hierarchy hierarchy))
-                        {
-                            // Publish warning if measure not found
-                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingHierarchyWarning(filter, hierarchyName, tableName));
-                        }
-                        else
-                        {
-                            // Register the dependency relationship
-                            filter.AddDataInput(hierarchy);
-                            hierarchy.AddDependent(filter);
-                        }
-                    }
-                }
+                var artifacts = new HashSet<DatabaseArtifact>();
+                artifacts.UnionWith(ExtractArtifactsFromExpressionNode(expressionNode, "Column", filter, semanticModel));
+                artifacts.UnionWith(ExtractArtifactsFromExpressionNode(expressionNode, "Measure", filter, semanticModel));
+                artifacts.UnionWith(ExtractArtifactsFromExpressionNode(expressionNode, "Hierarchy", filter, semanticModel));
 
+                foreach (var artifact in artifacts)
+                {
+                    filter.AddDataInput(artifact);
+                    artifact.AddDependent(filter);
+                }
             }
             return filter;
         }

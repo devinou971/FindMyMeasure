@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FindMyMeasure.Database
 {
-    public abstract class DatabaseArtifact : IDataInput, IModelReferenceTarget, IEquatable<DatabaseArtifact>
+    public class DatabaseArtifact : IDataInput, IModelReferenceTarget, IEquatable<DatabaseArtifact>
     {
         // That would be for Measures, Columns and Hierarchies
 
@@ -27,7 +27,7 @@ namespace FindMyMeasure.Database
         //    Hierarchy
         //}
 
-        protected DatabaseArtifact(ulong id, string name, string type, string expression, Table table)
+        internal DatabaseArtifact(ulong id, string name, string type, string expression, Table table)
         {
             this._id = id;
             this._name = name;
@@ -36,7 +36,7 @@ namespace FindMyMeasure.Database
             this._table = table;
         }
 
-        protected DatabaseArtifact(ulong id, string name, string type, Table table)
+        internal DatabaseArtifact(ulong id, string name, string type, Table table)
         {
             this._id = id;
             this._name = name;
