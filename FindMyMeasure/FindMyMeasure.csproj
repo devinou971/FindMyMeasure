@@ -146,7 +146,9 @@
     <Compile Include="Database\Table.cs" />
     <Compile Include="Enums\UsageState.cs" />
     <Compile Include="Interfaces\IDataInput.cs" />
+    <Compile Include="Interfaces\IMissingArtifactWarningSubscriber.cs" />
     <Compile Include="Interfaces\IMissingColumnWarningSubscriber.cs" />
+    <Compile Include="Interfaces\IMissingHierarchyWarningSubscriber.cs" />
     <Compile Include="Interfaces\IMissingMeasureWarningSubscriber.cs" />
     <Compile Include="Interfaces\IModelReferenceTarget.cs" />
     <Compile Include="Interfaces\IAnalysisWarningSubscriber.cs" />
@@ -161,6 +163,7 @@
     <Compile Include="PowerBI\Visual.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WarningClasses\AnalysisWarning.cs" />
+    <Compile Include="WarningClasses\MissingArtifactWarning.cs" />
     <Compile Include="WarningClasses\MissingColumnWarning.cs" />
     <Compile Include="WarningClasses\MissingHierarchyWarning.cs" />
     <Compile Include="WarningClasses\MissingMeasureWarning.cs" />

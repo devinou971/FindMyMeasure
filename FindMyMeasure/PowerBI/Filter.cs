@@ -88,7 +88,7 @@ namespace FindMyMeasure.PowerBI
                     string artifactName = artifactNode[nodeName].ToString();
                     string tableName = artifactNode["Expression"]["SourceRef"]["Entity"].ToString();
                     if (!semanticModel.TryFindArtifactByName(artifactType, artifactName, tableName, out DatabaseArtifact artifact))
-                        AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingColumnWarning(source, artifactName, tableName));
+                        AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingArtifactWarning(source, artifactType, artifactName, tableName));
                     else
                         artifacts.Add(artifact);
                 }

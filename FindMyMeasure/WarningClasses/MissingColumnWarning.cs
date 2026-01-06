@@ -7,20 +7,14 @@ using System.Threading.Tasks;
 
 namespace FindMyMeasure.WarningClasses
 {
-    public class MissingColumnWarning : AnalysisWarning
+    public class MissingColumnWarning : MissingArtifactWarning // TODO : Deprecate this to replace with MissingArtifactWarning
     {
         private string _columnName;
-        private string _tableName;
-        private IPowerBILeafNode _sender;
         public string ColumnName => this._columnName;
-        public string TableName => this._tableName;
-        public IPowerBILeafNode Sender => this._sender;
 
-        public MissingColumnWarning(IPowerBILeafNode sender, string columnName, string tableName) : base($"The column {columnName} from table {tableName} used in {sender.Name} doesn't exist in semantic model.")
+        public MissingColumnWarning(IPowerBILeafNode sender, string columnName, string tableName) : base(sender, "Column", columnName, tableName)
         {
-            this._sender = sender;
             this._columnName = columnName;
-            this._tableName = tableName;
         }
     }
 }

@@ -7,20 +7,14 @@ using System.Threading.Tasks;
 
 namespace FindMyMeasure.WarningClasses
 {
-    public class MissingHierarchyWarning : AnalysisWarning
+    public class MissingHierarchyWarning : MissingArtifactWarning // TODO : Deprecate this to replace with MissingArtifactWarning
     {
         private string _hierarchyName;
-        private string _tableName;
-        private IPowerBILeafNode _sender;
         public string HierarchyName => _hierarchyName;
-        public string TableName => _tableName;
-        public IPowerBILeafNode Sender => _sender;
 
-        public MissingHierarchyWarning(IPowerBILeafNode sender, string hierarchyName, string tableName) : base($"The hierarchy {hierarchyName} from table {tableName} used in {sender.Name} doesn't exist in semantic model.")
+        public MissingHierarchyWarning(IPowerBILeafNode sender, string hierarchyName, string tableName) : base(sender, "Hierarchy", hierarchyName, tableName)
         {
-            this._sender = sender;
             this._hierarchyName = hierarchyName;
-            this._tableName = tableName;
         }
     }
 }
