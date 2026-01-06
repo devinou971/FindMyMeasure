@@ -44,6 +44,7 @@ namespace FindMyMeasure.Gui
 
         public ReportSelectionWindow(IEnumerable<ReportAnalysisConfiguration> reportConfigs)
         {
+            this.Resources.MergedDictionaries.Add(Utils.GetLanguageDictionary());
             InitializeComponent();
             reportConfigList = new ObservableCollection<ReportAnalysisConfiguration>();
             dgReportList.ItemsSource = reportConfigList;
