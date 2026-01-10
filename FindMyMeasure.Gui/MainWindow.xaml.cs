@@ -6,9 +6,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media.TextFormatting;
+using System.Windows.Threading;
 
 namespace FindMyMeasure.Gui
 {
@@ -20,13 +24,19 @@ namespace FindMyMeasure.Gui
 
         public ICollectionView UsageRecordsView { get; }
 
+        private CancellationTokenSource _filterCts;
+        private IEnumerable<DataGridUsageRecord> _filteredRecords;
+
         private HashSet<SemanticModel> _semanticModels;
         private IEnumerable<ReportAnalysisConfiguration> _reportAnalysisConfigurations;
+        private IEnumerable<DataGridUsageRecord> _usageRecords;
 
         public MainWindow(HashSet<SemanticModel> semanticModels, IEnumerable<ReportAnalysisConfiguration> reportAnalysisConfigurations, HashSet<DataGridUsageRecord> usageRecords)
         {
             this._semanticModels = semanticModels;
             this._reportAnalysisConfigurations = reportAnalysisConfigurations;
+            this._usageRecords = usageRecords;
+            this._filteredRecords = usageRecords;
             ObservableCollection<string> dataGridSementicModelNames = new ObservableCollection<string>(semanticModels.Select(x => x.Name));
 
             InitializeComponent();
@@ -43,7 +53,6 @@ namespace FindMyMeasure.Gui
             }
 
             this.Resources.MergedDictionaries.Add(Utils.GetLanguageDictionary());
-            
         }
 
         public bool FilterUsageRecords(object obj)
@@ -54,11 +63,7 @@ namespace FindMyMeasure.Gui
                 {
                     return true;
                 }
-                bool matchUsageState = record.Model == cbSementicModelFilter.SelectedValue.ToString();
-                matchUsageState &= cbTypeFilter.SelectedIndex == 0 || record.Type == cbTypeFilter.SelectedValue.ToString();
-                matchUsageState &= cbUsageFilter.SelectedIndex == 0 || cbUsageFilter.SelectedValue.ToString() == record.UsageState.ToString();
-
-                return matchUsageState;
+                return _filteredRecords.Contains(record);
             }
             return false;
         }
@@ -66,9 +71,7 @@ namespace FindMyMeasure.Gui
         private void cbSementicModelFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (this.UsageRecordsView == null)
-            {
                 return;
-            }
 
             var selectedSemanticModel = this._semanticModels.First(x => x.Name == this.cbSementicModelFilter.SelectedItem.ToString());
             cbTypeFilter.SelectedIndex = 0;
@@ -159,14 +162,66 @@ namespace FindMyMeasure.Gui
 
         private void cbTypeFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (this.UsageRecordsView != null)
-                this.UsageRecordsView.Refresh();
+            RunFilterAsync();
         }
 
         private void cbUsageFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (this.UsageRecordsView != null)
+            RunFilterAsync();
+        }
+
+        private void tbArtifactNameSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            RunFilterAsync();
+        }
+
+        private void tbTableNameSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            RunFilterAsync();
+        }
+
+        private async void RunFilterAsync()
+        {
+            if (_filterCts != null)
+                _filterCts.Cancel();
+            _filterCts = new CancellationTokenSource();
+            var token = _filterCts.Token;
+            try
+            {
+                await Task.Delay(300, token); // debounce
+
+                string modelFilter = cbSementicModelFilter.SelectedValue.ToString();
+                string typeFilter = cbTypeFilter.SelectedValue.ToString();
+                int typeFilterId = cbTypeFilter.SelectedIndex;
+                string usageFilter = cbUsageFilter.SelectedValue.ToString();
+                int usageFilterId = cbUsageFilter.SelectedIndex;
+                string artifactNameFilter = tbArtifactNameSearch.Text.ToLower().Trim();
+                string tableNameFilter = tbTableNameSearch.Text.ToLower().Trim();
+
+                this._filteredRecords = await Task.Run(() =>
+                {
+                    List<DataGridUsageRecord> filteredRecords = new List<DataGridUsageRecord>();
+                    foreach (var record in this._usageRecords)
+                    {
+                        bool matchUsageState = record.Model == modelFilter;
+                        matchUsageState &= typeFilterId == 0 || record.Type == typeFilter;
+                        matchUsageState &= usageFilterId == 0 || usageFilter == record.UsageState.ToString();
+                        matchUsageState &= artifactNameFilter.Length == 0 || record.DataInput.Name.ToLower().Contains(artifactNameFilter);
+                        matchUsageState &= tableNameFilter.Length == 0 || record.DataInput.ParentTable.Name.ToLower().Contains(tableNameFilter.ToLower());
+                        if (matchUsageState)
+                        {
+                            filteredRecords.Add(record);
+                        }
+                    }
+                    return filteredRecords;
+                }, token);
+
                 this.UsageRecordsView.Refresh();
+            }
+            catch (TaskCanceledException)
+            {
+            }
+
         }
     }
 }
