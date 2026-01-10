@@ -15,6 +15,8 @@
     <system:String x:Key="MainWindow.Button.ReturnToReportSelection.Content">Return to report selection</system:String>
     <system:String x:Key="MainWindow.Label.SemanticModelFilter.Content">Model :</system:String>
     <system:String x:Key="MainWindow.Label.TypeFilter.Content">Type :</system:String>
+    <system:String x:Key="MainWindow.Label.ArtifactNameSearch.Content">Name search :</system:String>
+    <system:String x:Key="MainWindow.Label.TableNameSearch.Content">Table name :</system:String>
     <system:String x:Key="MainWindow.Label.UsageLevelFilter.Content">Usage :</system:String>
     <system:String x:Key="MainWindow.Column.Name.Header">Name</system:String>
     <system:String x:Key="MainWindow.Column.UsageState.Header">Usage state</system:String>
