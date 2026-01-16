@@ -29,7 +29,7 @@
                         <TextBox Name="tbArtifactNameSearch" MaxLines="1" TextChanged="tbArtifactNameSearch_TextChanged"></TextBox>
                     </StackPanel>
                     <StackPanel Margin="10,10,0,0">
-                        <Label Name="lTableNameSearch" Content="{DynamicResource MainWindow.Label.ArtifactNameSearch.Content}" />
+                        <Label Name="lTableNameSearch" Content="{DynamicResource MainWindow.Label.TableNameSearch.Content}" />
                         <TextBox Name="tbTableNameSearch" MaxLines="1" TextChanged="tbTableNameSearch_TextChanged"></TextBox>
                     </StackPanel>
                     <StackPanel Margin="10,10,0,0">
