@@ -31,6 +31,8 @@ namespace FindMyMeasure.Gui
         private IEnumerable<ReportAnalysisConfiguration> _reportAnalysisConfigurations;
         private IEnumerable<DataGridUsageRecord> _usageRecords;
 
+        private static bool InitialisationFinished = false;
+
         public MainWindow(HashSet<SemanticModel> semanticModels, IEnumerable<ReportAnalysisConfiguration> reportAnalysisConfigurations, HashSet<DataGridUsageRecord> usageRecords)
         {
             this._semanticModels = semanticModels;
@@ -40,6 +42,7 @@ namespace FindMyMeasure.Gui
             ObservableCollection<string> dataGridSementicModelNames = new ObservableCollection<string>(semanticModels.Select(x => x.Name));
 
             InitializeComponent();
+            InitialisationFinished = true;
 
             this.UsageRecordsView = CollectionViewSource.GetDefaultView(usageRecords);
             this.UsageRecordsView.Filter = FilterUsageRecords;
@@ -77,7 +80,7 @@ namespace FindMyMeasure.Gui
             cbTypeFilter.SelectedIndex = 0;
             cbUsageFilter.SelectedIndex = 0;
 
-            this.UsageRecordsView.Refresh();
+            RunFilterAsync(0);
 
             lbStats.Items.Clear();
             lbStats.Items.Add($"Number of Tables: {selectedSemanticModel.GetTables().Count}");
@@ -162,12 +165,14 @@ namespace FindMyMeasure.Gui
 
         private void cbTypeFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            RunFilterAsync();
+            if(InitialisationFinished)
+                RunFilterAsync(0);
         }
 
         private void cbUsageFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            RunFilterAsync();
+            if (InitialisationFinished)
+                RunFilterAsync(0);
         }
 
         private void tbArtifactNameSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -180,7 +185,7 @@ namespace FindMyMeasure.Gui
             RunFilterAsync();
         }
 
-        private async void RunFilterAsync()
+        private async void RunFilterAsync(int debounceDelay = 300)
         {
             if (_filterCts != null)
                 _filterCts.Cancel();
@@ -188,7 +193,7 @@ namespace FindMyMeasure.Gui
             var token = _filterCts.Token;
             try
             {
-                await Task.Delay(300, token); // debounce
+                await Task.Delay(debounceDelay, token); // debounce
 
                 string modelFilter = cbSementicModelFilter.SelectedValue.ToString();
                 string typeFilter = cbTypeFilter.SelectedValue.ToString();
