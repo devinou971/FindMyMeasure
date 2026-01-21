@@ -31,7 +31,7 @@ namespace FindMyMeasure.Gui
         private IEnumerable<ReportAnalysisConfiguration> _reportAnalysisConfigurations;
         private IEnumerable<DataGridUsageRecord> _usageRecords;
 
-        private static bool InitialisationFinished = false;
+        private bool InitialisationFinished = false;
 
         public MainWindow(HashSet<SemanticModel> semanticModels, IEnumerable<ReportAnalysisConfiguration> reportAnalysisConfigurations, HashSet<DataGridUsageRecord> usageRecords)
         {
