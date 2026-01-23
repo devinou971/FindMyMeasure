@@ -4,5 +4,6 @@
     {
         string Name { get; }
         string Type { get; }
+        bool Equals(object obj);
     }
 }

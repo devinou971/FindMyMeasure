@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -150,12 +151,16 @@ namespace FindMyMeasure.PowerBI
             return filters;
         }
 
-        /// <summary>
-        /// Gets the hash code for this report based on its file path.
-        /// </summary>
+        public override bool Equals(object obj)
+        {
+            if(obj is PowerBIReport report)
+                return report._path == this._path;
+            return false;
+        }
+
         public override int GetHashCode()
         {
-            return ("PowerBIReport:" + this._path).GetHashCode();
+            return _path.GetHashCode();
         }
     }
 }

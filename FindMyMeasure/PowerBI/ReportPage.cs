@@ -32,11 +32,6 @@ namespace FindMyMeasure.PowerBI
             return this._visuals.Add(visual);
         }
 
-        public override int GetHashCode()
-        {
-            return ("ReportPage:" + this._parentReport.Name + this._name).GetHashCode();
-        }
-
         public HashSet<Visual> GetVisuals() => this._visuals;
         public HashSet<Filter> GetFilters() => this._filters;
 
@@ -77,5 +72,17 @@ namespace FindMyMeasure.PowerBI
 
 
         public PowerBIReport GetPowerBIReport() => this._parentReport;
+
+        public override bool Equals(object obj)
+        {
+            if(obj is ReportPage reportPage)
+                return reportPage._name == this._name && reportPage._displayName == this._displayName && reportPage._parentReport == this._parentReport;
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return new { this._name, this._displayName, this._parentReport.Path }.GetHashCode();
+        }
     }
 }

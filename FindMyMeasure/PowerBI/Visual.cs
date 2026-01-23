@@ -40,11 +40,6 @@ namespace FindMyMeasure.PowerBI
 
         public HashSet<Filter> GetFilters() => this._filters;
 
-        public override int GetHashCode()
-        {
-            return (_parentPage.Name + this._visualType + this._name).GetHashCode();
-        }
-
         public static Visual LoadFromJson(JsonNode visualNode, ReportPage parentPage, bool analyseHiddenVisuals) // TODO Refactoring : Use JsonObject instead of JsonNode when loading visuals
         {
             if (visualNode["config"] == null)
@@ -143,6 +138,18 @@ namespace FindMyMeasure.PowerBI
         public ReportPage GetReportPage()
         {
             return this._parentPage;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(obj is Visual v)
+                return v._name == this._name && v._visualType == this._visualType && v._parentPage == this._parentPage;
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return new { this.Name, this.VisualType, this._parentPage }.GetHashCode();
         }
     }
 }

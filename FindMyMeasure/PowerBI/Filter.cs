@@ -71,11 +71,6 @@ namespace FindMyMeasure.PowerBI
             return this._parent;
         }
 
-        public override int GetHashCode()
-        {
-            return this._id.GetHashCode();
-        }
-
         private static HashSet<DatabaseArtifact> ExtractArtifactsFromExpressionNode(JsonNode expressionNode, string artifactType, IPowerBILeafNode source, SemanticModel semanticModel)
         {
             HashSet <DatabaseArtifact> artifacts = new HashSet <DatabaseArtifact>();
@@ -232,6 +227,18 @@ namespace FindMyMeasure.PowerBI
                 default:
                     return $"Filter '{_id}' from '{this._parent.Name}'";
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Filter f)
+                return f._id == this._id && f._parent == this._parent;
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return new { this._id, this._parent }.GetHashCode();
         }
     }
 }

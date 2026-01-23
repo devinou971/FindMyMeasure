@@ -22,14 +22,7 @@
         /// </summary>
         /// <param name="obj">The object to compare with the current node.</param>
         /// <returns>True if the objects are equal; otherwise, false.</returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is PowerBINode)
-            {
-                return this.GetHashCode() == ((PowerBINode)obj).GetHashCode();
-            }
-            return false;
-        }
+        public abstract override bool Equals(object obj);
 
         /// <summary>
         /// Returns a string representation of this node, using its Name property.
