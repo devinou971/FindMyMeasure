@@ -1,4 +1,5 @@
 ﻿using FindMyMeasure.Database;
+using FindMyMeasure.Gui.MVVM.ViewModels;
 using FindMyMeasure.Interfaces;
 using FindMyMeasure.PowerBI;
 using System;
@@ -39,21 +40,17 @@ namespace FindMyMeasure.Gui.MVVM
             this._reportAnalysisConfigurations = reportAnalysisConfigurations;
             this._usageRecords = usageRecords;
             this._filteredRecords = usageRecords;
-            ObservableCollection<string> dataGridSementicModelNames = new ObservableCollection<string>(semanticModels.Select(x => x.Name));
+            //ObservableCollection<string> dataGridSementicModelNames = new ObservableCollection<string>(semanticModels.Select(x => x.Name));
 
             InitializeComponent();
             InitialisationFinished = true;
+            var viewModel = new MainWindowViewModel(semanticModels, reportAnalysisConfigurations, usageRecords);
+            this.DataContext = viewModel;
 
             this.UsageRecordsView = CollectionViewSource.GetDefaultView(usageRecords);
             this.UsageRecordsView.Filter = FilterUsageRecords;
 
-            dgUsageRecords.ItemsSource = this.UsageRecordsView;
-
-            cbSementicModelFilter.ItemsSource = dataGridSementicModelNames;
-            if (dataGridSementicModelNames.Count > 0)
-            {
-                cbSementicModelFilter.SelectedIndex = 0;
-            }
+            //dgUsageRecords.ItemsSource = this.UsageRecordsView;
 
             this.Resources.MergedDictionaries.Add(Utils.GetLanguageDictionary());
         }
@@ -69,24 +66,6 @@ namespace FindMyMeasure.Gui.MVVM
                 return _filteredRecords.Contains(record);
             }
             return false;
-        }
-
-        private void cbSementicModelFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (this.UsageRecordsView == null)
-                return;
-
-            var selectedSemanticModel = this._semanticModels.First(x => x.Name == this.cbSementicModelFilter.SelectedItem.ToString());
-            cbTypeFilter.SelectedIndex = 0;
-            cbUsageFilter.SelectedIndex = 0;
-
-            RunFilterAsync(0);
-
-            lbStats.Items.Clear();
-            lbStats.Items.Add($"Number of Tables: {selectedSemanticModel.GetTables().Count}");
-            lbStats.Items.Add($"Number of Measures: {selectedSemanticModel.GetMeasures().Count}");
-            lbStats.Items.Add($"Number of Columns: {selectedSemanticModel.GetColumns().Count}");
-            lbStats.Items.Add($"Number of Relationships: {selectedSemanticModel.GetRelationships().Count}");
         }
 
         private void dgUsageRecords_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
@@ -164,18 +143,6 @@ namespace FindMyMeasure.Gui.MVVM
             ReportSelectionWindow reportSelectionWindow = new ReportSelectionWindow(this._reportAnalysisConfigurations);
             reportSelectionWindow.Show();
             this.Close();
-        }
-
-        private void cbTypeFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (InitialisationFinished)
-                RunFilterAsync(0);
-        }
-
-        private void cbUsageFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (InitialisationFinished)
-                RunFilterAsync(0);
         }
 
         private void tbArtifactNameSearch_TextChanged(object sender, TextChangedEventArgs e)

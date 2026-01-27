@@ -60,7 +60,7 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
                 if (this.analyseHiddenPages == value)
                     return;
                 this.analyseHiddenPages = value;
-                OnPropertChanged();
+                OnPropertyChanged();
                 updateReportsAdvancedSettings();
             }
         }
@@ -73,7 +73,7 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
                 if(this.analyseHiddenVisuals == value)
                     return;
                 this.analyseHiddenVisuals = value;
-                OnPropertChanged();
+                OnPropertyChanged();
                 updateReportsAdvancedSettings();
             }
         }
@@ -94,7 +94,7 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
                 if (!analyseHiddenVisuals != null)
                     report.AnalyseHiddenVisuals= this.AnalyseHiddenVisuals ?? false;
             }
-            OnPropertChanged(nameof(this.ReportConfigList));
+            OnPropertyChanged(nameof(this.ReportConfigList));
         }
 
         public void AddReportToSelectionList(ReportAnalysisConfiguration reportAnalysisConfiguration)
@@ -147,7 +147,7 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             var report = new ReportAnalysisConfiguration(reportName, pbiFilepath, modelName, connectionString, Properties.Settings.Default.AnalyseHiddenVisuals, Properties.Settings.Default.AnalyseHiddenPages, modelType);
             if (!reportConfigList.Contains(report))
                 reportConfigList.Add(report);
-            OnPropertChanged(nameof(this.ReportConfigList));
+            OnPropertyChanged(nameof(this.ReportConfigList));
         }
 
         private void removeReport(int reportId)
