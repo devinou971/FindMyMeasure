@@ -22,9 +22,6 @@ namespace FindMyMeasure.Gui.MVVM
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        public ICollectionView UsageRecordsView { get; }
-
         private CancellationTokenSource _filterCts;
         private IEnumerable<DataGridUsageRecord> _filteredRecords;
 
@@ -32,40 +29,18 @@ namespace FindMyMeasure.Gui.MVVM
         private IEnumerable<ReportAnalysisConfiguration> _reportAnalysisConfigurations;
         private IEnumerable<DataGridUsageRecord> _usageRecords;
 
-        private bool InitialisationFinished = false;
-
         public MainWindow(HashSet<SemanticModel> semanticModels, IEnumerable<ReportAnalysisConfiguration> reportAnalysisConfigurations, HashSet<DataGridUsageRecord> usageRecords)
         {
             this._semanticModels = semanticModels;
             this._reportAnalysisConfigurations = reportAnalysisConfigurations;
             this._usageRecords = usageRecords;
             this._filteredRecords = usageRecords;
-            //ObservableCollection<string> dataGridSementicModelNames = new ObservableCollection<string>(semanticModels.Select(x => x.Name));
 
             InitializeComponent();
-            InitialisationFinished = true;
             var viewModel = new MainWindowViewModel(semanticModels, reportAnalysisConfigurations, usageRecords);
             this.DataContext = viewModel;
 
-            this.UsageRecordsView = CollectionViewSource.GetDefaultView(usageRecords);
-            this.UsageRecordsView.Filter = FilterUsageRecords;
-
-            //dgUsageRecords.ItemsSource = this.UsageRecordsView;
-
             this.Resources.MergedDictionaries.Add(Utils.GetLanguageDictionary());
-        }
-
-        public bool FilterUsageRecords(object obj)
-        {
-            if (obj is DataGridUsageRecord record)
-            {
-                if (cbSementicModelFilter.SelectedItem == null)
-                {
-                    return true;
-                }
-                return _filteredRecords.Contains(record);
-            }
-            return false;
         }
 
         private void dgUsageRecords_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
@@ -139,64 +114,10 @@ namespace FindMyMeasure.Gui.MVVM
 
         private void bReturnToReportSelection_Click(object sender, RoutedEventArgs e)
         {
-
             ReportSelectionWindow reportSelectionWindow = new ReportSelectionWindow(this._reportAnalysisConfigurations);
             reportSelectionWindow.Show();
             this.Close();
         }
 
-        private void tbArtifactNameSearch_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            RunFilterAsync();
-        }
-
-        private void tbTableNameSearch_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            RunFilterAsync();
-        }
-
-        private async void RunFilterAsync(int debounceDelay = 300)
-        {
-            if (_filterCts != null)
-                _filterCts.Cancel();
-            _filterCts = new CancellationTokenSource();
-            var token = _filterCts.Token;
-            try
-            {
-                await Task.Delay(debounceDelay, token); // debounce
-
-                string modelFilter = cbSementicModelFilter.SelectedValue.ToString();
-                string typeFilter = cbTypeFilter.SelectedValue.ToString();
-                int typeFilterId = cbTypeFilter.SelectedIndex;
-                string usageFilter = cbUsageFilter.SelectedValue.ToString();
-                int usageFilterId = cbUsageFilter.SelectedIndex;
-                string artifactNameFilter = tbArtifactNameSearch.Text.ToLower().Trim();
-                string tableNameFilter = tbTableNameSearch.Text.ToLower().Trim();
-
-                this._filteredRecords = await Task.Run(() =>
-                {
-                    List<DataGridUsageRecord> filteredRecords = new List<DataGridUsageRecord>();
-                    foreach (var record in this._usageRecords)
-                    {
-                        bool matchUsageState = record.Model == modelFilter;
-                        matchUsageState &= typeFilterId == 0 || record.Type == typeFilter;
-                        matchUsageState &= usageFilterId == 0 || usageFilter == record.UsageState.ToString();
-                        matchUsageState &= artifactNameFilter.Length == 0 || record.DataInput.Name.ToLower().Contains(artifactNameFilter);
-                        matchUsageState &= tableNameFilter.Length == 0 || record.DataInput.ParentTable.Name.ToLower().Contains(tableNameFilter.ToLower());
-                        if (matchUsageState)
-                        {
-                            filteredRecords.Add(record);
-                        }
-                    }
-                    return filteredRecords;
-                }, token);
-
-                this.UsageRecordsView.Refresh();
-            }
-            catch (TaskCanceledException)
-            {
-            }
-
-        }
     }
 }

@@ -15,19 +15,14 @@ using System.Windows.Input;
 
 namespace FindMyMeasure.Gui.MVVM.ViewModels
 {
-    
-
     internal class MainWindowViewModel : ViewModelBase
     {
-
         private CancellationTokenSource _filterCts;
         private IEnumerable<DataGridUsageRecord> _filteredRecords;
 
         private HashSet<SemanticModel> _semanticModels;
         private IEnumerable<ReportAnalysisConfiguration> _reportAnalysisConfigurations;
         private IEnumerable<DataGridUsageRecord> _usageRecords;
-
-        public ICommand FilterArtifactsBySemanticModel;
 
         public CollectionViewSource UsageRecordsView { get; }
 
@@ -65,6 +60,27 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             } 
         }
 
+        private string _artifactNameFilter = "";
+        public string ArtifactNameFilter { 
+            get => this._artifactNameFilter;
+            set {
+                this._artifactNameFilter = value;
+                FilterRows(300);
+                OnPropertyChanged();
+            }
+        }
+
+        private string _tableNameFilter = "";
+        public string TableNameFilter
+        {
+            get => this._tableNameFilter;
+            set {
+                this._tableNameFilter = value;
+                FilterRows(300);
+                OnPropertyChanged();
+            }
+        }
+
         public MainWindowViewModel(HashSet<SemanticModel> semanticModels, IEnumerable<ReportAnalysisConfiguration> reportAnalysisConfigurations, IEnumerable<DataGridUsageRecord> usageRecords)
         {
             this._semanticModels = semanticModels;
@@ -72,17 +88,12 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             this._usageRecords = usageRecords;
             this._filteredRecords = usageRecords;
 
-
             this.SemanticModels = new ObservableCollection<SemanticModel>(this._semanticModels);
             this.Stats = new ObservableCollection<string>();
             this.SemanticModelFilter = this._semanticModels.FirstOrDefault();
 
-            //this.UsageRecordsView = CollectionViewSource.GetDefaultView(usageRecords);
             this.UsageRecordsView = new CollectionViewSource { Source = usageRecords };
             this.UsageRecordsView.Filter += FilterUsageRecords;
-
-            this.FilterArtifactsBySemanticModel = new RelayCommand(semanticModelName => filterArtifactsBySemanticModel(semanticModelName));
-
         }
 
         private void calculateStats()
@@ -94,7 +105,6 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             this.Stats.Add($"Number of Relationships: {this.SemanticModelFilter.GetRelationships().Count}");
         }
 
-
         public void FilterUsageRecords(object send, FilterEventArgs e)
         {
             if (e.Item is DataGridUsageRecord record)
@@ -104,16 +114,6 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             }
             e.Accepted = false;
         }
-
-
-        private void filterArtifactsBySemanticModel(object semanticModel)
-        {
-            if(semanticModel is string semanticModelName)
-            {
-
-            }
-        }
-
 
         private async void FilterRows(int debounceDelay = 300)
         {
@@ -126,12 +126,10 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
                 await Task.Delay(debounceDelay, token); // debounce
 
                 string modelFilter = this.SemanticModelFilter.Name ;
-                string typeFilter = this.ArtifactTypeFilter; //cbTypeFilter.SelectedValue.ToString();
-                //int typeFilterId = cbTypeFilter.SelectedIndex;
-                string usageFilter = this.UsageStateFilter; // cbUsageFilter.SelectedValue.ToString();
-                //int usageFilterId = cbUsageFilter.SelectedIndex;
-                //string artifactNameFilter = tbArtifactNameSearch.Text.ToLower().Trim();
-                //string tableNameFilter = tbTableNameSearch.Text.ToLower().Trim();
+                string typeFilter = this.ArtifactTypeFilter;
+                string usageFilter = this.UsageStateFilter;
+                string artifactNameFilter = this.ArtifactNameFilter.ToLower().Trim();
+                string tableNameFilter = this.TableNameFilter.ToLower().Trim();
 
                 this._filteredRecords = await Task.Run(() =>
                 {
@@ -139,10 +137,10 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
                     foreach (var record in this._usageRecords)
                     {
                         bool matchUsageState = record.Model == modelFilter;
-                        matchUsageState &= typeFilter == "All" || record.Type == typeFilter; // typeFilterId == 0 || record.Type == typeFilter;
-                        matchUsageState &= usageFilter == "All" || usageFilter == record.UsageState.ToString(); //usageFilterId == 0 || usageFilter == record.UsageState.ToString();
-                        //matchUsageState &= artifactNameFilter.Length == 0 || record.DataInput.Name.ToLower().Contains(artifactNameFilter);
-                        //matchUsageState &= tableNameFilter.Length == 0 || record.DataInput.ParentTable.Name.ToLower().Contains(tableNameFilter.ToLower());
+                        matchUsageState &= typeFilter == "All" || record.Type == typeFilter;
+                        matchUsageState &= usageFilter == "All" || usageFilter == record.UsageState.ToString();
+                        matchUsageState &= artifactNameFilter.Length == 0 || record.DataInput.Name.ToLower().Contains(artifactNameFilter);
+                        matchUsageState &= tableNameFilter.Length == 0 || record.DataInput.ParentTable.Name.ToLower().Contains(tableNameFilter.ToLower());
                         if (matchUsageState)
                         {
                             filteredRecords.Add(record);

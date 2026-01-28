@@ -23,20 +23,20 @@
             <Border BorderBrush="#FFABADB3" BorderThickness="1" Padding="5,0,5,5">
                 <StackPanel Name="Filters">
                     <Label Name="lSemanticModelFilter" Content="{DynamicResource MainWindow.Label.SemanticModelFilter.Content}"/>
-                <!--<ComboBox Name="cbSementicModelFilter" IsEditable="False" IsReadOnly="True" SelectionChanged="cbSementicModelFilter_SelectionChanged"/>-->
                     <ComboBox Name="cbSementicModelFilter" IsEditable="False" IsReadOnly="True" ItemsSource="{Binding SemanticModels}" DisplayMemberPath="Name" SelectedItem="{Binding SemanticModelFilter, Mode=TwoWay}">
                     </ComboBox>
                     <StackPanel Margin="10,10,0,0">
                         <Label Name="lArtifactNameSearch" Content="{DynamicResource MainWindow.Label.ArtifactNameSearch.Content}" />
-                        <TextBox Name="tbArtifactNameSearch" MaxLines="1" TextChanged="tbArtifactNameSearch_TextChanged"></TextBox>
+                        <!--<TextBox Name="tbArtifactNameSearch" MaxLines="1" TextChanged="tbArtifactNameSearch_TextChanged"></TextBox>-->
+                        <TextBox Name="tbArtifactNameSearch" MaxLines="1" Text="{Binding ArtifactNameFilter, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"  />
                     </StackPanel>
                     <StackPanel Margin="10,10,0,0">
                         <Label Name="lTableNameSearch" Content="{DynamicResource MainWindow.Label.TableNameSearch.Content}" />
-                        <TextBox Name="tbTableNameSearch" MaxLines="1" TextChanged="tbTableNameSearch_TextChanged"></TextBox>
+                        <!--<TextBox Name="tbTableNameSearch" MaxLines="1" TextChanged="tbTableNameSearch_TextChanged"></TextBox>-->
+                        <TextBox Name="tbTableNameSearch" MaxLines="1" Text="{Binding TableNameFilter, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                     <StackPanel Margin="10,10,0,0">
                     <Label Name="lTypeFilter" Content="{DynamicResource MainWindow.Label.TypeFilter.Content}" />
-                    <!--<ComboBox Name="cbTypeFilter" IsEditable="False" IsReadOnly="True" SelectedValuePath="Content" SelectionChanged="cbTypeFilter_SelectionChanged">-->
                     <ComboBox Name="cbTypeFilter" IsEditable="False" IsReadOnly="True" SelectedValuePath="Tag" SelectedValue="{Binding ArtifactTypeFilter, Mode=TwoWay}" >
                         <ComboBoxItem Content="All" Tag="All"/>
                         <ComboBoxItem Content="Measure" Tag="Measure" />
@@ -48,7 +48,6 @@
 
                 <StackPanel Margin="10,10,0,0">
                     <Label Name="lUsageLevelFilter" Content="{DynamicResource MainWindow.Label.UsageLevelFilter.Content}" />
-                    <!--<ComboBox Name="cbUsageFilter" IsEditable="False" IsReadOnly="True" SelectedValuePath="Content" SelectionChanged="cbUsageFilter_SelectionChanged">-->
                     <ComboBox Name="cbUsageFilter" IsEditable="False" IsReadOnly="True" SelectedValuePath="Tag" SelectedValue="{Binding UsageStateFilter}" >
                         <ComboBoxItem Content="All" Tag="All" IsSelected="True"/>
                         <ComboBoxItem Content="Used" Tag="Used"/>
@@ -60,9 +59,7 @@
             </Border>
 
             <ListBox Name="lbStats" MinHeight="200" Margin="0,10,0,0" ItemsSource="{Binding Stats}" />
-            <!-- <ListBox Name="lbStats" MinHeight="200" Margin="0,10,0,0"/>-->
         </StackPanel>
-        <!-- <DataGrid Grid.Column="1" Grid.Row="1" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectedCellsChanged="dgUsageRecords_SelectedCellsChanged" SelectionUnit="Cell"> -->
         <DataGrid Grid.Column="1" Grid.Row="1" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectedCellsChanged="dgUsageRecords_SelectedCellsChanged" SelectionUnit="Cell" ItemsSource="{Binding UsageRecordsView.View}">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Type}" Width="Auto" MinWidth="100">
