@@ -1,17 +1,13 @@
 ﻿using FindMyMeasure.Database;
-using FindMyMeasure.Enums;
-using FindMyMeasure.Gui.MVVM.Commands;
+using FindMyMeasure.Interfaces;
+using FindMyMeasure.PowerBI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using System.Windows.Input;
 
 namespace FindMyMeasure.Gui.MVVM.ViewModels
 {
@@ -21,7 +17,6 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
         private IEnumerable<DataGridUsageRecord> _filteredRecords;
 
         private HashSet<SemanticModel> _semanticModels;
-        private IEnumerable<ReportAnalysisConfiguration> _reportAnalysisConfigurations;
         private IEnumerable<DataGridUsageRecord> _usageRecords;
 
         public CollectionViewSource UsageRecordsView { get; }
@@ -34,7 +29,7 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             set
             {
                 _semanticModelFilter = value;
-                calculateStats();
+                CalculateStats();
                 FilterRows(0);
                 OnPropertyChanged();
             } 
@@ -81,12 +76,36 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             }
         }
 
-        public MainWindowViewModel(HashSet<SemanticModel> semanticModels, IEnumerable<ReportAnalysisConfiguration> reportAnalysisConfigurations, IEnumerable<DataGridUsageRecord> usageRecords)
+        private DataGridUsageRecord _selectedArtifact;
+        public DataGridUsageRecord SelectedArtifact { get => this._selectedArtifact; set { 
+                this._selectedArtifact = value;
+                UpdateDependents();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedArtifactLabel));
+            } }
+
+        public string SelectedArtifactLabel { get
+            {
+                if (_selectedArtifact == null)
+                {
+                    var defaultText = Utils.GetLanguageDictionary()["MainWindow.Label.SelectionDetail.Content"];
+                    return defaultText == null ? "Selection details :" : defaultText.ToString();
+                }
+                return $"{this.SelectedArtifact.Type} : {this.SelectedArtifact.Name} - {this.SelectedArtifact.UsageState}({this.SelectedArtifact.NbOfUsage})";
+            } 
+        }
+
+        public ObservableCollection<object> SemanticModelDependents { get; private set; }
+        public ObservableCollection<object> ReportDependents { get; private set; }
+
+        public MainWindowViewModel(HashSet<SemanticModel> semanticModels, IEnumerable<DataGridUsageRecord> usageRecords)
         {
             this._semanticModels = semanticModels;
-            this._reportAnalysisConfigurations = reportAnalysisConfigurations;
             this._usageRecords = usageRecords;
             this._filteredRecords = usageRecords;
+
+            this.SemanticModelDependents = new ObservableCollection<object>();
+            this.ReportDependents = new ObservableCollection<object>();
 
             this.SemanticModels = new ObservableCollection<SemanticModel>(this._semanticModels);
             this.Stats = new ObservableCollection<string>();
@@ -96,13 +115,73 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             this.UsageRecordsView.Filter += FilterUsageRecords;
         }
 
-        private void calculateStats()
+        private void CalculateStats()
         {
             this.Stats.Clear();
             this.Stats.Add($"Number of Tables: {this.SemanticModelFilter.GetTables().Count}");
             this.Stats.Add($"Number of Measures: {this.SemanticModelFilter.GetMeasures().Count}");
             this.Stats.Add($"Number of Columns: {this.SemanticModelFilter.GetColumns().Count}");
             this.Stats.Add($"Number of Relationships: {this.SemanticModelFilter.GetRelationships().Count}");
+        }
+
+        private void UpdateDependents()
+        {
+            // TODO : Split this method into smaller methods
+            this.SemanticModelDependents.Clear();
+            this.ReportDependents.Clear();
+            var dependents = this.SelectedArtifact.DataInput.GetDependents();
+
+            foreach (var dependent in dependents)
+            {
+                if (dependent is IDataInput || dependent is Table || dependent is Relationship)
+                {
+                    SemanticModelDependents.Add(new
+                    {
+                        Type = dependent.Type,
+                        Name = (dependent is IDataInput) ? $"{dependent.Name} ({((IDataInput)dependent).GetUsageState()})" : dependent.Name,
+                        TableName = (dependent is IDataInput) ? ((IDataInput)dependent).ParentTable.Name :
+                                (dependent is Relationship) ? ((Relationship)dependent).FromColumn.ParentTable.Name + " -> " + ((Relationship)dependent).ToColumn.ParentTable.Name :
+                                ""
+                    });
+                }
+                else if (dependent is IPowerBILeafNode)
+                {
+                    string reportName = "";
+                    string pageName = "";
+                    if (dependent is Visual)
+                    {
+                        pageName = ((Visual)dependent).GetReportPage().Name;
+                        reportName = ((Visual)dependent).GetReportPage().GetPowerBIReport().Name;
+                    }
+                    else if (dependent is Filter)
+                    {
+                        var filterParent = ((Filter)dependent).GetParent();
+                        if (filterParent is Visual)
+                        {
+                            pageName = ((Visual)filterParent).GetReportPage().Name;
+                            reportName = ((Visual)filterParent).GetReportPage().GetPowerBIReport().Name;
+                        }
+                        else if (filterParent is ReportPage)
+                        {
+                            pageName = ((ReportPage)filterParent).Name;
+                            reportName = ((ReportPage)filterParent).GetPowerBIReport().Name;
+                        }
+                        else if (filterParent is PowerBIReport)
+                        {
+                            reportName = ((PowerBIReport)filterParent).Name;
+                        }
+                    }
+                    this.ReportDependents.Add(new
+                    {
+                        Type = dependent.Type,
+                        Name = ((IPowerBILeafNode)dependent).Name,
+                        ReportName = reportName,
+                        PageName = pageName
+                    });
+                }
+            }
+            OnPropertyChanged(nameof(this.ReportDependents));
+            OnPropertyChanged(nameof(this.SemanticModelDependents));
         }
 
         public void FilterUsageRecords(object send, FilterEventArgs e)
@@ -150,7 +229,7 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
                 }, token);
 
                 this.UsageRecordsView.View.Refresh();
-                OnPropertyChanged("UsageRecordsView.View");
+                OnPropertyChanged(nameof(UsageRecordsView));
             }
             catch (TaskCanceledException)
             {

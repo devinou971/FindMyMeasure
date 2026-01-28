@@ -15,21 +15,20 @@ namespace FindMyMeasure.Gui.MVVM
         static private int Next_id = 0;
         private int _id;
         public IDataInput DataInput { get; }
-        public string Type { get; }
-        public string Name { get; }
+        public string Type { get => this.DataInput.Type; }
+        public string Name { get => this.DataInput.Name; }
         public string Model { get; }
-        public string Table { get; }
+        public string Table { get => this.DataInput.ParentTable.Name; }
         public int NbOfUsage { get; }
         public UsageState UsageState { get; }
+        public String Expression { get => DataInput.Expression; }
+        public bool HasExpression { get => !string.IsNullOrEmpty(this.Expression); }
 
         public DataGridUsageRecord(IDataInput dataInput, string SemanticModeName)
         {
             _id = Next_id++;
             DataInput = dataInput;
             Model = SemanticModeName;
-            Type = this.DataInput.Type;
-            Name = this.DataInput.Name;
-            Table = this.DataInput.ParentTable.Name;
             NbOfUsage = this.DataInput.GetDependents().Count;
             UsageState = this.DataInput.GetUsageState();
         }

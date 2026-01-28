@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:FindMyMeasure.Gui.MVVM"
         mc:Ignorable="d"
         Title="FindMyMeasure" Height="550" Width="800" WindowState="Maximized" WindowStyle="SingleBorderWindow">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -60,7 +63,8 @@
 
             <ListBox Name="lbStats" MinHeight="200" Margin="0,10,0,0" ItemsSource="{Binding Stats}" />
         </StackPanel>
-        <DataGrid Grid.Column="1" Grid.Row="1" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectedCellsChanged="dgUsageRecords_SelectedCellsChanged" SelectionUnit="Cell" ItemsSource="{Binding UsageRecordsView.View}">
+        <DataGrid Grid.Column="1" Grid.Row="1" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectedCellsChanged="dgUsageRecords_SelectedCellsChanged" SelectionUnit="Cell" ItemsSource="{Binding UsageRecordsView.View}"> 
+        <!--<DataGrid Grid.Column="1" Grid.Row="1" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectedItem="{Binding SelectedArtifact, Mode=OneWayToSource}" SelectionUnit="Cell" ItemsSource="{Binding UsageRecordsView.View}">-->
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Type}" Width="Auto" MinWidth="100">
                     <DataGridTextColumn.Header>
@@ -110,19 +114,22 @@
         </DataGrid>
 
         <StackPanel Grid.Column="2" Grid.Row="1" Margin="10">
-            <Label Content="{DynamicResource MainWindow.Label.SelectionDetail.Content}" FontWeight="Bold" FontSize="16"/>
+            <!-- <Label Content="{DynamicResource MainWindow.Label.SelectionDetail.Content}" FontWeight="Bold" FontSize="16"/>-->
+            <Label Content="{Binding SelectedArtifactLabel, Mode=OneWay}" FontWeight="Bold" FontSize="16"/>
             <Label Name="lbSelectedElementName" Content="{DynamicResource MainWindow.Label.SelectedElement.Content}" Margin="0,10,0,0" FontSize="16"/>
             <StackPanel Name="spDetailsPanel" Visibility="Collapsed">
 
                 <TextBlock Name="tbDescription" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="Collapsed" />
 
                 <ScrollViewer MaxHeight="200">
-                    <TextBox Name="tbExpression" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="Collapsed" IsReadOnly="True"/>
+                    <!--<TextBox Name="tbExpression" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="Collapsed" IsReadOnly="True"/>-->
+                    <TextBox Name="tbExpression" Text="{Binding SelectedArtifact.Expression, Mode=OneWay}" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="{Binding SelectedArtifact.HasExpression, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}" IsReadOnly="True"/>
                 </ScrollViewer>
                 
                 <TextBlock TextWrapping="Wrap" Margin="0,10,0,0" Text="{DynamicResource MainWindow.TextBlock.SemanticModelDependents.Text}" />
 
-                <DataGrid Name="dgSementicModelDependents" Margin="0,10,0,0" IsReadOnly="True" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">
+                <!--<DataGrid Name="dgSementicModelDependents" Margin="0,10,0,0" IsReadOnly="True" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">-->
+                <DataGrid Name="dgSementicModelDependents" ItemsSource="{Binding SemanticModelDependents}" Margin="0,10,0,0" IsReadOnly="True" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Type}" Width="Auto">
                             <DataGridTextColumn.Header>
@@ -143,7 +150,8 @@
                 </DataGrid>
                 <TextBlock TextWrapping="Wrap" Margin="0,10,0,0" Text="{DynamicResource MainWindow.TextBlock.VisualDependents.Text}" />
 
-                <DataGrid Name="dgReportDependents" Margin="0,10,0,0" IsReadOnly="True" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">
+                <!--<DataGrid Name="dgReportDependents" Margin="0,10,0,0" IsReadOnly="True" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">-->
+                <DataGrid Name="dgReportDependents" Margin="0,10,0,0" IsReadOnly="True" ItemsSource="{Binding ReportDependents}" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding ReportName}" Width="*">
                             <DataGridTextColumn.Header>
