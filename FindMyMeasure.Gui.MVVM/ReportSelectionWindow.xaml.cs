@@ -1,15 +1,11 @@
 ﻿using FindMyMeasure.Database;
 using FindMyMeasure.Enums;
-using FindMyMeasure.Gui.MVVM.Commands;
 using FindMyMeasure.Gui.MVVM.Exceptions;
-using FindMyMeasure.Gui.MVVM.ViewModels;
 using FindMyMeasure.PowerBI;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -18,7 +14,6 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using static FindMyMeasure.Gui.MVVM.ReportAnalysisConfiguration;
 
 

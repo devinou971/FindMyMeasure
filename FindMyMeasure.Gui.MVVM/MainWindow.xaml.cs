@@ -1,19 +1,8 @@
 ﻿using FindMyMeasure.Database;
 using FindMyMeasure.Gui.MVVM.ViewModels;
-using FindMyMeasure.Interfaces;
-using FindMyMeasure.PowerBI;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media.TextFormatting;
-using System.Windows.Threading;
 
 namespace FindMyMeasure.Gui.MVVM
 {
