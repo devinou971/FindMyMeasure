@@ -1,12 +1,17 @@
 ﻿using FindMyMeasure.Gui.MVVM.Commands;
+using FindMyMeasure.Gui.MVVM.Models;
+using FindMyMeasure.Gui.MVVM.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using static FindMyMeasure.Gui.MVVM.ReportAnalysisConfiguration;
@@ -16,15 +21,17 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
     public class ReportSelectionViewModel : ViewModelBase
     {
 
-        private bool? analyseHiddenPages;
-        private bool? analyseHiddenVisuals;
-        private ObservableCollection<ReportAnalysisConfiguration> reportConfigList = new ObservableCollection<ReportAnalysisConfiguration>();
+        private bool? _analyseHiddenPagesAllChecked;
+        private bool? _analyseHiddenVisualsAllChecked;
+        private ObservableCollection<ReportAnalysisConfiguration> _reportConfigList = new ObservableCollection<ReportAnalysisConfiguration>();
+        private bool _isBusy = false;
+        private bool blockReportConfigChangedEvent = false;
+        private double _analysisProgressValue = 0.0;
+        private ObservableCollection<String> _analysisProgressMessages = new ObservableCollection<String>();
+        private ReportAnalysisResult _analysisResult;
 
-        public ICommand UpdateReportListCommand { get; }
-        public ICommand RemoveReport { get ; }
-
-        public ICommand MyCommand { get; } = new RelayCommand(_ => { Console.WriteLine("Button clicked"); });
-
+        public ICommand RemoveReportCommand { get ; }
+        public ICommand StartAnalysisCommand { get; }
 
         public ReportSelectionViewModel() : this(new List<ReportAnalysisConfiguration>())
         {
@@ -32,71 +39,116 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
 
         public ReportSelectionViewModel(IEnumerable<ReportAnalysisConfiguration> reportConfigs)
         {
-            UpdateReportListCommand = new RelayCommand(action => updateReportsAdvancedSettings());
-            RemoveReport = new RelayCommand(action => 
+            this.AnalyseHiddenPagesAllChecked = true;
+            RemoveReportCommand = new RelayCommand(action => 
             { 
                 if(action is int reportId)
-                    removeReport(reportId); 
+                    RemoveReport(reportId); 
             });
-             
+
+            StartAnalysisCommand = new RelayCommand(action =>
+            {
+                StartAnalysisAsync();
+            });
+
             foreach (var reportConfig in reportConfigs)
-            {
-                this.reportConfigList.Add(reportConfig);
-            }
+                this._reportConfigList.Add(reportConfig);
+
+            this._reportConfigList.CollectionChanged += OnReportListChanged;
+            foreach (var report in this._reportConfigList)
+                report.PropertyChanged += OnReportConfigChanged;
         }
 
 
-        public bool? AnalyseHiddenPages
+        public bool? AnalyseHiddenPagesAllChecked
         {
-            get => this.analyseHiddenPages;
+            get => this._analyseHiddenPagesAllChecked;
             set
             {
-                if (this.analyseHiddenPages == value)
+                if (this._analyseHiddenPagesAllChecked == value)
                     return;
-                this.analyseHiddenPages = value;
+                this._analyseHiddenPagesAllChecked = value;
                 OnPropertyChanged();
-                updateReportsAdvancedSettings();
+                if (this._analyseHiddenPagesAllChecked != null)
+                {
+                    blockReportConfigChangedEvent = true;
+                    SetAllReportsToAnalyseHiddenPages(this._analyseHiddenPagesAllChecked ?? true);
+                    blockReportConfigChangedEvent = false;
+                }
             }
         }
 
-        public bool? AnalyseHiddenVisuals
+        public bool? AnalyseHiddenVisualsAllChecked
         {
-            get => this.analyseHiddenVisuals;
+            get => this._analyseHiddenVisualsAllChecked;
             set
             {
-                if(this.analyseHiddenVisuals == value)
+                if(this._analyseHiddenVisualsAllChecked == value)
                     return;
-                this.analyseHiddenVisuals = value;
+                this._analyseHiddenVisualsAllChecked = value;
                 OnPropertyChanged();
-                updateReportsAdvancedSettings();
+                if (this._analyseHiddenVisualsAllChecked != null)
+                {
+                    this.blockReportConfigChangedEvent = true;
+                    this. SetAllReportsToAnalyseHiddenVisuals(this._analyseHiddenVisualsAllChecked ?? true);
+                    this.blockReportConfigChangedEvent = false;
+                }
             }
         }
+
+        public bool IsBusy { get => this._isBusy; set { 
+                this._isBusy = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ReportAnalysisResult ReportAnalysisResult { get => this._analysisResult; 
+            set
+            {
+                this._analysisResult = value;
+                OnPropertyChanged();
+            } 
+        }
+
 
         public ObservableCollection<ReportAnalysisConfiguration> ReportConfigList
         {
-            get => this.reportConfigList;
+            get => this._reportConfigList;
         }
 
-        public void updateReportsAdvancedSettings()
+        public double AnalysisProgressValue
         {
-            Console.WriteLine("Testing");
-            foreach(var report in this.reportConfigList)
-            {
-                if (!analyseHiddenPages != null)
-                    report.AnalyseHiddenPages = this.AnalyseHiddenPages ?? false;
-
-                if (!analyseHiddenVisuals != null)
-                    report.AnalyseHiddenVisuals= this.AnalyseHiddenVisuals ?? false;
+            get => this._analysisProgressValue;
+            set { 
+                this._analysisProgressValue = value;
+                OnPropertyChanged();
             }
-            OnPropertyChanged(nameof(this.ReportConfigList));
         }
 
-        public void AddReportToSelectionList(ReportAnalysisConfiguration reportAnalysisConfiguration)
+        public ObservableCollection<string> AnalysisProgressMessages
         {
-            this.reportConfigList.Add(reportAnalysisConfiguration);
+            get => this._analysisProgressMessages;
         }
 
-        public void AddReportToSelectionList(string pbiFilepath)
+        public void SetAllReportsToAnalyseHiddenPages(bool analyseHiddenPages)
+        {
+            foreach (var report in this._reportConfigList)
+                report.AnalyseHiddenPages = analyseHiddenPages;
+        }
+
+        public void SetAllReportsToAnalyseHiddenVisuals(bool analyseHiddenVisuals)
+        {
+            foreach (var report in this._reportConfigList)
+                report.AnalyseHiddenVisuals = analyseHiddenVisuals;
+        }
+
+
+        public void AddReportConfigToList(ReportAnalysisConfiguration reportAnalysisConfiguration)
+        {
+            this._reportConfigList.Add(reportAnalysisConfiguration);
+        }
+
+        public void AddReportConfigToList(string pbiFilepath)
         {
             string connectionsFileContent = null;
             using (ZipArchive pbixFile = ZipFile.OpenRead(pbiFilepath))
@@ -139,14 +191,74 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             }
 
             var report = new ReportAnalysisConfiguration(reportName, pbiFilepath, modelName, connectionString, Properties.Settings.Default.AnalyseHiddenVisuals, Properties.Settings.Default.AnalyseHiddenPages, modelType);
-            if (!reportConfigList.Contains(report))
-                reportConfigList.Add(report);
-            OnPropertyChanged(nameof(this.ReportConfigList));
+            if (!_reportConfigList.Contains(report))
+                _reportConfigList.Add(report);
         }
 
-        private void removeReport(int reportId)
+        private void RemoveReport(int reportId)
         {
-            reportConfigList.Remove(reportConfigList.First(r => r.ReportId == reportId));
+            _reportConfigList.Remove(_reportConfigList.First(r => r.ReportId == reportId));
+        }
+
+        private async void StartAnalysisAsync()
+        {
+            this.IsBusy = true;
+
+            var analysisService = new ReportAnalysisService(this.ReportConfigList.ToList()); // We send a copy in case of collection modified exception
+            Progress<double> progressValue = new Progress<double>(p => this.AnalysisProgressValue = p);
+            Progress<string> progressMessage = new Progress<string>(m => this.AnalysisProgressMessages.Add(m));
+            this._analysisResult = await Task.Run(() => { return analysisService.RunAsync(progressValue, progressMessage); });
+
+            this.IsBusy = false;
+        }
+
+        private void OnReportListChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            
+            if(e.NewItems != null)
+            {
+                foreach (ReportAnalysisConfiguration item in e.NewItems)
+                    item.PropertyChanged += OnReportConfigChanged;
+            }
+            if(e.OldItems != null)
+            {
+                foreach (ReportAnalysisConfiguration item in e.OldItems)
+                    item.PropertyChanged -= OnReportConfigChanged;
+            }
+            RecalculateAnalyseHiddenPagesAllChecked();
+            RecalculateAnalyseHiddenVisualsAllChecked();
+        }
+
+        private void OnReportConfigChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (blockReportConfigChangedEvent)
+                return;
+            if (e.PropertyName == nameof(ReportAnalysisConfiguration.AnalyseHiddenPages))
+                RecalculateAnalyseHiddenPagesAllChecked();
+            else if (e.PropertyName == nameof(ReportAnalysisConfiguration.AnalyseHiddenVisuals))
+                RecalculateAnalyseHiddenVisualsAllChecked();
+        }
+
+        private void RecalculateAnalyseHiddenPagesAllChecked()
+        {
+            if (this._reportConfigList.All(x => x.AnalyseHiddenPages))
+                this._analyseHiddenPagesAllChecked = true;
+            else if (this._reportConfigList.All(x => !x.AnalyseHiddenVisuals))
+                this._analyseHiddenPagesAllChecked = false;
+            else 
+                this._analyseHiddenPagesAllChecked = null;
+            OnPropertyChanged(nameof(this.AnalyseHiddenPagesAllChecked));
+        }
+
+        private void RecalculateAnalyseHiddenVisualsAllChecked()
+        {
+            if (this._reportConfigList.All(x => x.AnalyseHiddenVisuals))
+                this._analyseHiddenVisualsAllChecked = true;
+            else if (this._reportConfigList.All(x => !x.AnalyseHiddenVisuals))
+                this._analyseHiddenVisualsAllChecked = false;
+            else
+                this._analyseHiddenVisualsAllChecked = null;
+            OnPropertyChanged(nameof(this.AnalyseHiddenVisualsAllChecked));
         }
 
         public void LoadLatestRun()
@@ -166,9 +278,9 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
                         var reportConfigs = JsonSerializer.Deserialize<List<ReportAnalysisConfiguration>>(lastRunValue, options);
                         foreach (var reportConfig in reportConfigs)
                         {
-                            if (!reportConfigList.Contains(reportConfig))
+                            if (!_reportConfigList.Contains(reportConfig))
                             {
-                                reportConfigList.Add(reportConfig);
+                                _reportConfigList.Add(reportConfig);
                             }
                         }
                     }

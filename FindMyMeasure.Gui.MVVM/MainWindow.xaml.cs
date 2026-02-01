@@ -1,4 +1,5 @@
 ﻿using FindMyMeasure.Database;
+using FindMyMeasure.Gui.MVVM.Models;
 using FindMyMeasure.Gui.MVVM.ViewModels;
 using System.Collections.Generic;
 using System.Windows;
@@ -14,12 +15,12 @@ namespace FindMyMeasure.Gui.MVVM
         private IEnumerable<ReportAnalysisConfiguration> _reportAnalysisConfigurations;
         private MainWindowViewModel _viewModel;
 
-        public MainWindow(HashSet<SemanticModel> semanticModels, IEnumerable<ReportAnalysisConfiguration> reportAnalysisConfigurations, HashSet<DataGridUsageRecord> usageRecords)
+        public MainWindow(ReportAnalysisResult analysisResult)
         {
-            this._reportAnalysisConfigurations = reportAnalysisConfigurations;
+            this._reportAnalysisConfigurations = analysisResult.ReportAnalysisConfigurations;
 
             InitializeComponent();
-            this._viewModel = new MainWindowViewModel(semanticModels, usageRecords);
+            this._viewModel = new MainWindowViewModel(analysisResult.SemanticModels, analysisResult.DataGridUsageRecords);
             this.DataContext = _viewModel;
 
             this.Resources.MergedDictionaries.Add(Utils.GetLanguageDictionary());
@@ -36,9 +37,6 @@ namespace FindMyMeasure.Gui.MVVM
             DataGridUsageRecord selectedRecord = (DataGridUsageRecord)dgUsageRecords.SelectedCells[0].Item;
 
             this._viewModel.SelectedArtifact = selectedRecord;
-
-            //lbSelectedElementName.Content = $"{selectedRecord.Type} : {selectedRecord.Name} - {selectedRecord.UsageState}({selectedRecord.NbOfUsage})";
-            
         }
 
         private void bReturnToReportSelection_Click(object sender, RoutedEventArgs e)

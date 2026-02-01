@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using FindMyMeasure.Gui.MVVM.ViewModels;
+using System.Windows;
 
 namespace FindMyMeasure.Gui.MVVM
 {
@@ -7,39 +8,11 @@ namespace FindMyMeasure.Gui.MVVM
     /// </summary>
     public partial class LoadingProgressWindow : Window
     {
-        public LoadingProgressWindow()
+        public LoadingProgressWindow(ReportSelectionViewModel viewModel)
         {
             InitializeComponent();
             this.Resources.MergedDictionaries.Add(Utils.GetLanguageDictionary());
-
-        }
-
-        public void SetProgress(double progress)
-        {
-            pbMain.Value = progress;
-        }
-
-        public void MarkAsCompleted()
-        {
-            lMain.Content = "Analysis Completed";
-            pbMain.Value = pbMain.Maximum;
-            btnOk.IsEnabled = true;
-        }
-
-        public void AddLog(string log)
-        {
-            if (string.IsNullOrEmpty(log))
-                return;
-            this.lbLog.Items.Add(log);
-            if (lbLog.Items.Count > 0)
-            {
-                lbLog.ScrollIntoView(lbLog.Items[lbLog.Items.Count - 1]);
-            }
-        }
-
-        public void SetIndeterminate(bool indeterminate)
-        {
-            pbMain.IsIndeterminate = indeterminate;
+            this.DataContext = viewModel;
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
