@@ -9,9 +9,8 @@
         Title="{DynamicResource ReportSelectionWindow.Title}" Height="450" Width="800">
 
     <Window.Resources>
-        <!-- Style pour bouton icône : fond rouge, icône blanche, coins arrondis -->
+        <!-- Delete button style -->
         <Style x:Key="IconButtonStyle" TargetType="Button">
-            
             <Setter Property="Width" Value="30"/>
             <Setter Property="Height" Value="30"/>
             <Setter Property="Background" Value="Red"/>
@@ -51,9 +50,11 @@
         <Label VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Width="162">FindMyMeasure</Label>
         <StackPanel Grid.Row="1" Margin="0,10,0,10" >
             <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{DynamicResource ReportSelectionWindow.SelectionTextBlock.Text}" />
+            <!-- Import report button -->
             <Button Margin="0,10,0,0" Grid.Row="1" Content="{DynamicResource ReportSelectionWindow.Button.ImportReport.Content}" Width="156" HorizontalAlignment="Left" Click="bImportReports_Click" />
         </StackPanel>
 
+        <!-- Reports list -->
         <DataGrid ItemsSource="{Binding ReportConfigList}" Grid.Row="2" Margin="0,0,0,10" Height="Auto" AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding ModelName}" Width="*" IsReadOnly="True">
@@ -68,6 +69,7 @@
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
 
+                <!-- A checkbox column to chose whether to analyse hidden pages or not -->
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.Header>
                         <CheckBox Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenPages.Header}" IsThreeState="True" IsChecked="{Binding DataContext.AnalyseHiddenPagesAllChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}"/>
@@ -79,6 +81,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
+                <!-- A checkbox column to chose whether to analyse hidden visuals or not -->
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.Header>
                         <CheckBox Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenVisuals.Header}" IsThreeState="True" IsChecked="{Binding DataContext.AnalyseHiddenVisualsAllChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}"/>
@@ -90,6 +93,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
+                <!-- Delete button column -->
                 <DataGridTemplateColumn Header="" Width="40">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -111,9 +115,7 @@
             </DataGrid.Resources>
         </DataGrid>
 
-        <StackPanel Grid.Row="3">
-        </StackPanel>
-
+        <!-- Start Analysis button -->
         <Button Grid.Row="4" Content="{DynamicResource ReportSelectionWindow.Button.StartAnalysis.Content}" Width="100" HorizontalAlignment="Right" Command="{Binding StartAnalysisCommand}"/>
         
     </Grid>

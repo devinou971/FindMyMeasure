@@ -98,6 +98,11 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
         public ObservableCollection<object> SemanticModelDependents { get; private set; }
         public ObservableCollection<object> ReportDependents { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the `MainWindowViewModel` class.
+        /// </summary>
+        /// <param name="semanticModels">The semantic models available in the application.</param>
+        /// <param name="usageRecords">The usage records to be displayed and filtered in the UI.</param>
         public MainWindowViewModel(HashSet<SemanticModel> semanticModels, IEnumerable<DataGridUsageRecord> usageRecords)
         {
             this._semanticModels = semanticModels;
@@ -124,6 +129,10 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             this.Stats.Add($"Number of Relationships: {this.SemanticModelFilter.GetRelationships().Count}");
         }
 
+        /// <summary>
+        /// Updates the dependent objects shown in the UI for the currently selected
+        /// artifact, splitting them into semantic model dependents and report dependents.
+        /// </summary>
         private void UpdateDependents()
         {
             // TODO : Split this method into smaller methods
@@ -184,6 +193,10 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             OnPropertyChanged(nameof(this.SemanticModelDependents));
         }
 
+        /// <summary>
+        /// Filter callback used by `UsageRecordsView` that accepts items present
+        /// in the current filtered records collection.
+        /// </summary>
         public void FilterUsageRecords(object send, FilterEventArgs e)
         {
             if (e.Item is DataGridUsageRecord record)
@@ -194,7 +207,13 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             e.Accepted = false;
         }
 
-        private async void FilterRows(int debounceDelay = 300)
+        /// <summary>
+        /// Applies the UI filters to the underlying usage records with an optional
+        /// debounce delay. Filtering runs on a background thread and updates the
+        /// view when complete.
+        /// </summary>
+        /// <param name="debounceDelayMilliseconds">Delay in milliseconds to debounce rapid calls.</param>
+        private async void FilterRows(int debounceDelayMilliseconds = 300)
         {
             if (_filterCts != null)
                 _filterCts.Cancel();
@@ -202,7 +221,7 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             var token = _filterCts.Token;
             try
             {
-                await Task.Delay(debounceDelay, token); // debounce
+                await Task.Delay(debounceDelayMilliseconds, token); // debounce
 
                 string modelFilter = this.SemanticModelFilter.Name ;
                 string typeFilter = this.ArtifactTypeFilter;

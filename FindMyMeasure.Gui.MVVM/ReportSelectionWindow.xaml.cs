@@ -55,6 +55,12 @@ namespace FindMyMeasure.Gui.MVVM
             MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
+        /// <summary>
+        /// Triggers when the user presses the "Start Analysis" button, and launches a progress window. 
+        /// When the process is finished, the user is redirected to the MainWindow
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnReportAnalysisStarted(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ReportSelectionViewModel.IsBusy))

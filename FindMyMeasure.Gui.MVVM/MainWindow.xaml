@@ -24,6 +24,7 @@
 
         <StackPanel Grid.Column="0" Grid.Row="1" Margin="10" Width="200" >
             <Border BorderBrush="#FFABADB3" BorderThickness="1" Padding="5,0,5,5">
+                <!-- Filter stackpanel -->
                 <StackPanel>
                     <Label Content="{DynamicResource MainWindow.Label.SemanticModelFilter.Content}"/>
                     <ComboBox IsEditable="False" IsReadOnly="True" ItemsSource="{Binding SemanticModels}" DisplayMemberPath="Name" SelectedItem="{Binding SemanticModelFilter, Mode=TwoWay}">
@@ -59,8 +60,11 @@
             </StackPanel>
             </Border>
 
+            <!-- Stats list -->
             <ListBox MinHeight="200" Margin="0,10,0,0" ItemsSource="{Binding Stats}" />
         </StackPanel>
+        
+        <!-- Artifact list -->
         <DataGrid Grid.Column="1" Grid.Row="1" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectedCellsChanged="dgUsageRecords_SelectedCellsChanged" SelectionUnit="Cell" ItemsSource="{Binding UsageRecordsView.View}"> 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Type}" Width="Auto" MinWidth="100">

@@ -35,10 +35,22 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
         public ICommand RemoveReportCommand { get ; }
         public ICommand StartAnalysisCommand { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the view model and populates the internal
+        /// report configuration list with the provided items. Also wires up collection
+        /// and property changed handlers and recalculates the aggregate tri-state
+        /// checkbox values.
+        /// </summary>
         public ReportSelectionViewModel() : this(new List<ReportAnalysisConfiguration>())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the view model and populates the internal
+        /// report configuration list with the provided items. Also wires up collection
+        /// and property changed handlers and recalculates the aggregate tri-state
+        /// checkbox values.
+        /// </summary>
         public ReportSelectionViewModel(IEnumerable<ReportAnalysisConfiguration> reportConfigs)
         {
             this.AnalyseHiddenPagesAllChecked = true;
@@ -59,6 +71,7 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             this._reportConfigList.CollectionChanged += OnReportListChanged;
             foreach (var report in this._reportConfigList)
                 report.PropertyChanged += OnReportConfigChanged;
+
             RecalculateAnalyseHiddenPagesAllChecked();
             RecalculateAnalyseHiddenVisualsAllChecked();
         }
@@ -134,12 +147,20 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             get => this._analysisProgressMessages;
         }
 
+        /// <summary>
+        /// Sets the `AnalyseHiddenPages` flag on every report in the list.
+        /// </summary>
+        /// <param name="analyseHiddenPages">Value to assign to each report's flag.</param>
         public void SetAllReportsToAnalyseHiddenPages(bool analyseHiddenPages)
         {
             foreach (var report in this._reportConfigList)
                 report.AnalyseHiddenPages = analyseHiddenPages;
         }
 
+        /// <summary>
+        /// Sets the `AnalyseHiddenVisuals` flag on every report in the list.
+        /// </summary>
+        /// <param name="analyseHiddenVisuals">Value to assign to each report's flag.</param>
         public void SetAllReportsToAnalyseHiddenVisuals(bool analyseHiddenVisuals)
         {
             foreach (var report in this._reportConfigList)
@@ -152,6 +173,12 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             this._reportConfigList.Add(reportAnalysisConfiguration);
         }
 
+        /// <summary>
+        /// Extracts metadata from the specified PBIX file and creates a
+        /// corresponding `ReportAnalysisConfiguration`. The configuration is
+        /// added to the list if it does not already exist.
+        /// </summary>
+        /// <param name="pbiFilepath">Path to a PBIX file.</param>
         public void AddReportConfigToList(string pbiFilepath)
         {
             string connectionsFileContent = null;
@@ -204,6 +231,10 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             _reportConfigList.Remove(_reportConfigList.First(r => r.ReportId == reportId));
         }
 
+        /// <summary>
+        /// Starts the analysis process on a background thread and updates progress
+        /// and result properties. Exceptions are reported via `ErrorOccured` event handler.
+        /// </summary>
         private async void StartAnalysisAsync()
         {
             this.IsBusy = true;
@@ -224,6 +255,11 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             }
         }
 
+        /// <summary>
+        /// Handles changes to the report collection by wiring/unwiring property
+        /// change handlers for added/removed items and recalculating the aggregate
+        /// tri-state checkbox values.
+        /// </summary>
         private void OnReportListChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             
@@ -241,6 +277,11 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             RecalculateAnalyseHiddenVisualsAllChecked();
         }
 
+        /// <summary>
+        /// Responds to individual report configuration property changes and
+        /// recalculates aggregate checkbox values unless updates are currently
+        /// blocked.
+        /// </summary>
         private void OnReportConfigChanged(object sender, PropertyChangedEventArgs e)
         {
             if (blockReportConfigChangedEvent)
@@ -251,6 +292,14 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
                 RecalculateAnalyseHiddenVisualsAllChecked();
         }
 
+        
+        /// <summary>
+        /// Recalculates the tri-state value of `AnalyseHiddenPagesAllChecked` based on the
+        /// current `ReportConfigList` values. Sets the backing field to:
+        /// - true:  if all reports have `AnalyseHiddenPages` enabled
+        /// - false: if all reports have `AnalyseHiddenPages` disabled
+        /// - null:  if there is a mix of enabled and disabled values
+        /// </summary>
         private void RecalculateAnalyseHiddenPagesAllChecked()
         {
             if (this._reportConfigList.All(x => x.AnalyseHiddenPages))
@@ -262,6 +311,13 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             OnPropertyChanged(nameof(this.AnalyseHiddenPagesAllChecked));
         }
 
+        /// <summary>
+        /// Recalculates the tri-state value of `AnalyseHiddenVisualsAllChecked` based on the
+        /// current `ReportConfigList` values. Sets the backing field to:
+        /// - true:  if all reports have `AnalyseHiddenVisuals` enabled
+        /// - false: if all reports have `AnalyseHiddenVisuals` disabled
+        /// - null:  if there is a mix of enabled and disabled values
+        /// </summary>
         private void RecalculateAnalyseHiddenVisualsAllChecked()
         {
             if (this._reportConfigList.All(x => x.AnalyseHiddenVisuals))
@@ -273,6 +329,10 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             OnPropertyChanged(nameof(this.AnalyseHiddenVisualsAllChecked));
         }
 
+        /// <summary>
+        /// Reads the content of last config file, and adds all the reports to the _reportConfigList. 
+        /// The path of the file is set in : Properties.Settings.Default.LastRunSavePath
+        /// </summary>
         public void LoadLatestRun()
         {
             try
@@ -300,14 +360,18 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             }
             catch (System.IO.IOException e)
             {
-                MessageBox.Show($"Could not open the file {Properties.Settings.Default.LastRunSavePath}. Error details : {e.Message}");
+                this.ErrorOccured?.Invoke(this, $"Could not open the file {Properties.Settings.Default.LastRunSavePath}. Error details : {e.Message}");
             }
             catch (JsonException e)
             {
-                MessageBox.Show($"Could not deserialyse file {Properties.Settings.Default.LastRunSavePath}. Here are error details : {e.Message}");
+                this.ErrorOccured?.Invoke(this, $"Could not deserialyse file {Properties.Settings.Default.LastRunSavePath}. Here are error details : {e.Message}");
             }
         }
 
+        /// <summary>
+        /// Save the ReportConfigList into a json file. 
+        /// The path to that JSON is set in Properties.Settings.Default.LastRunSavePath.
+        /// </summary>
         private void SaveReportsList()
         {
             IEnumerable<string> reportPaths = this._reportConfigList.Select(x => x.ReportPath);
