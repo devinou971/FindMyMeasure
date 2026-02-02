@@ -20,25 +20,25 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Button Grid.Column="0" Grid.Row="0" Name="bReturnToReportSelection" Content="{DynamicResource MainWindow.Button.ReturnToReportSelection.Content}" Height="25" Margin="10" Click="bReturnToReportSelection_Click"/>
+        <Button Grid.Column="0" Grid.Row="0" Content="{DynamicResource MainWindow.Button.ReturnToReportSelection.Content}" Height="25" Margin="10" Click="bReturnToReportSelection_Click"/>
 
         <StackPanel Grid.Column="0" Grid.Row="1" Margin="10" Width="200" >
             <Border BorderBrush="#FFABADB3" BorderThickness="1" Padding="5,0,5,5">
-                <StackPanel Name="Filters">
-                    <Label Name="lSemanticModelFilter" Content="{DynamicResource MainWindow.Label.SemanticModelFilter.Content}"/>
-                    <ComboBox Name="cbSementicModelFilter" IsEditable="False" IsReadOnly="True" ItemsSource="{Binding SemanticModels}" DisplayMemberPath="Name" SelectedItem="{Binding SemanticModelFilter, Mode=TwoWay}">
+                <StackPanel>
+                    <Label Content="{DynamicResource MainWindow.Label.SemanticModelFilter.Content}"/>
+                    <ComboBox IsEditable="False" IsReadOnly="True" ItemsSource="{Binding SemanticModels}" DisplayMemberPath="Name" SelectedItem="{Binding SemanticModelFilter, Mode=TwoWay}">
                     </ComboBox>
                     <StackPanel Margin="10,10,0,0">
-                        <Label Name="lArtifactNameSearch" Content="{DynamicResource MainWindow.Label.ArtifactNameSearch.Content}" />
-                        <TextBox Name="tbArtifactNameSearch" MaxLines="1" Text="{Binding ArtifactNameFilter, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"  />
+                        <Label Content="{DynamicResource MainWindow.Label.ArtifactNameSearch.Content}" />
+                        <TextBox MaxLines="1" Text="{Binding ArtifactNameFilter, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"  />
                     </StackPanel>
                     <StackPanel Margin="10,10,0,0">
-                        <Label Name="lTableNameSearch" Content="{DynamicResource MainWindow.Label.TableNameSearch.Content}" />
-                        <TextBox Name="tbTableNameSearch" MaxLines="1" Text="{Binding TableNameFilter, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" />
+                        <Label Content="{DynamicResource MainWindow.Label.TableNameSearch.Content}" />
+                        <TextBox MaxLines="1" Text="{Binding TableNameFilter, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                     <StackPanel Margin="10,10,0,0">
-                    <Label Name="lTypeFilter" Content="{DynamicResource MainWindow.Label.TypeFilter.Content}" />
-                    <ComboBox Name="cbTypeFilter" IsEditable="False" IsReadOnly="True" SelectedValuePath="Tag" SelectedValue="{Binding ArtifactTypeFilter, Mode=TwoWay}" >
+                    <Label Content="{DynamicResource MainWindow.Label.TypeFilter.Content}" />
+                    <ComboBox IsEditable="False" IsReadOnly="True" SelectedValuePath="Tag" SelectedValue="{Binding ArtifactTypeFilter, Mode=TwoWay}" >
                         <ComboBoxItem Content="All" Tag="All"/>
                         <ComboBoxItem Content="Measure" Tag="Measure" />
                         <ComboBoxItem Content="Column" Tag="Column"/>
@@ -48,8 +48,8 @@
                 </StackPanel>
 
                 <StackPanel Margin="10,10,0,0">
-                    <Label Name="lUsageLevelFilter" Content="{DynamicResource MainWindow.Label.UsageLevelFilter.Content}" />
-                    <ComboBox Name="cbUsageFilter" IsEditable="False" IsReadOnly="True" SelectedValuePath="Tag" SelectedValue="{Binding UsageStateFilter}" >
+                    <Label Content="{DynamicResource MainWindow.Label.UsageLevelFilter.Content}" />
+                    <ComboBox IsEditable="False" IsReadOnly="True" SelectedValuePath="Tag" SelectedValue="{Binding UsageStateFilter}" >
                         <ComboBoxItem Content="All" Tag="All" IsSelected="True"/>
                         <ComboBoxItem Content="Used" Tag="Used"/>
                         <ComboBoxItem Content="UsedByUnused" Tag="UsedByUnused"/>
@@ -59,7 +59,7 @@
             </StackPanel>
             </Border>
 
-            <ListBox Name="lbStats" MinHeight="200" Margin="0,10,0,0" ItemsSource="{Binding Stats}" />
+            <ListBox MinHeight="200" Margin="0,10,0,0" ItemsSource="{Binding Stats}" />
         </StackPanel>
         <DataGrid Grid.Column="1" Grid.Row="1" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectedCellsChanged="dgUsageRecords_SelectedCellsChanged" SelectionUnit="Cell" ItemsSource="{Binding UsageRecordsView.View}"> 
             <DataGrid.Columns>
@@ -111,22 +111,19 @@
         </DataGrid>
 
         <StackPanel Grid.Column="2" Grid.Row="1" Margin="10">
-            <!-- <Label Content="{DynamicResource MainWindow.Label.SelectionDetail.Content}" FontWeight="Bold" FontSize="16"/>-->
             <Label Content="{Binding SelectedArtifactLabel, Mode=OneWay}" FontWeight="Bold" FontSize="16"/>
-            <Label Name="lbSelectedElementName" Content="{DynamicResource MainWindow.Label.SelectedElement.Content}" Margin="0,10,0,0" FontSize="16"/>
+            <Label Content="{DynamicResource MainWindow.Label.SelectedElement.Content}" Margin="0,10,0,0" FontSize="16"/>
             <StackPanel Name="spDetailsPanel" Visibility="Collapsed">
 
-                <TextBlock Name="tbDescription" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="Collapsed" />
+                <TextBlock TextWrapping="Wrap" Margin="0,10,0,0" Visibility="Collapsed" />
 
                 <ScrollViewer MaxHeight="200">
-                    <!--<TextBox Name="tbExpression" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="Collapsed" IsReadOnly="True"/>-->
-                    <TextBox Name="tbExpression" Text="{Binding SelectedArtifact.Expression, Mode=OneWay}" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="{Binding SelectedArtifact.HasExpression, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}" IsReadOnly="True"/>
+                    <TextBox Text="{Binding SelectedArtifact.Expression, Mode=OneWay}" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="{Binding SelectedArtifact.HasExpression, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}" IsReadOnly="True"/>
                 </ScrollViewer>
                 
                 <TextBlock TextWrapping="Wrap" Margin="0,10,0,0" Text="{DynamicResource MainWindow.TextBlock.SemanticModelDependents.Text}" />
 
-                <!--<DataGrid Name="dgSementicModelDependents" Margin="0,10,0,0" IsReadOnly="True" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">-->
-                <DataGrid Name="dgSementicModelDependents" ItemsSource="{Binding SemanticModelDependents}" Margin="0,10,0,0" IsReadOnly="True" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">
+                <DataGrid ItemsSource="{Binding SemanticModelDependents}" Margin="0,10,0,0" IsReadOnly="True" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Type}" Width="Auto">
                             <DataGridTextColumn.Header>
@@ -147,8 +144,7 @@
                 </DataGrid>
                 <TextBlock TextWrapping="Wrap" Margin="0,10,0,0" Text="{DynamicResource MainWindow.TextBlock.VisualDependents.Text}" />
 
-                <!--<DataGrid Name="dgReportDependents" Margin="0,10,0,0" IsReadOnly="True" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">-->
-                <DataGrid Name="dgReportDependents" Margin="0,10,0,0" IsReadOnly="True" ItemsSource="{Binding ReportDependents}" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">
+                <DataGrid Margin="0,10,0,0" IsReadOnly="True" ItemsSource="{Binding ReportDependents}" AutoGenerateColumns="False" Visibility="Visible" MinHeight="50" MaxHeight="300">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding ReportName}" Width="*">
                             <DataGridTextColumn.Header>

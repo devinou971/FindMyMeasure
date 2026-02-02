@@ -34,14 +34,6 @@ namespace FindMyMeasure.Gui.MVVM
 
         public ReportSelectionWindow() : this(new List<ReportAnalysisConfiguration>())
         {
-            //this.Resources.MergedDictionaries.Add(Utils.GetLanguageDictionary());
-            //InitializeComponent();
-            //this.viewModel = new ReportSelectionViewModel();
-            //this.viewModel.ErrorOccured += OnAnalysisError;
-            //this.DataContext = viewModel;
-            //this.viewModel.LoadLatestRun();
-
-            //viewModel.PropertyChanged += OnReportAnalysisStarted;
         }
 
         
@@ -107,8 +99,5 @@ namespace FindMyMeasure.Gui.MVVM
                 }
             }
         }
-
-        
-
     }
 }

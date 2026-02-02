@@ -51,10 +51,10 @@
         <Label VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Width="162">FindMyMeasure</Label>
         <StackPanel Grid.Row="1" Margin="0,10,0,10" >
             <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{DynamicResource ReportSelectionWindow.SelectionTextBlock.Text}" />
-            <Button Margin="0,10,0,0" Grid.Row="1" Name="bImportReports" Content="{DynamicResource ReportSelectionWindow.Button.ImportReport.Content}" Width="156" HorizontalAlignment="Left" Click="bImportReports_Click" />
+            <Button Margin="0,10,0,0" Grid.Row="1" Content="{DynamicResource ReportSelectionWindow.Button.ImportReport.Content}" Width="156" HorizontalAlignment="Left" Click="bImportReports_Click" />
         </StackPanel>
 
-        <DataGrid ItemsSource="{Binding ReportConfigList}" Grid.Row="2" Margin="0,0,0,10" Name="dgReportList" Height="Auto" AutoGenerateColumns="False" CanUserAddRows="False">
+        <DataGrid ItemsSource="{Binding ReportConfigList}" Grid.Row="2" Margin="0,0,0,10" Height="Auto" AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding ModelName}" Width="*" IsReadOnly="True">
                     <DataGridTextColumn.Header>
@@ -68,24 +68,24 @@
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
 
-                <DataGridTemplateColumn x:Name="colAnalyseHiddenPages">
+                <DataGridTemplateColumn>
                     <DataGridTemplateColumn.Header>
-                        <CheckBox Name="cbAnalyseHiddenPages" Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenPages.Header}" IsThreeState="True" IsChecked="{Binding DataContext.AnalyseHiddenPagesAllChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}"/>
+                        <CheckBox Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenPages.Header}" IsThreeState="True" IsChecked="{Binding DataContext.AnalyseHiddenPagesAllChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}"/>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox Name="cbAnalyseHiddenPagesForRow" IsChecked="{Binding AnalyseHiddenPages, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Tag="{Binding ReportId}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <CheckBox IsChecked="{Binding AnalyseHiddenPages, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Tag="{Binding ReportId}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn x:Name="colAnalyseHiddenVisuals">
+                <DataGridTemplateColumn>
                     <DataGridTemplateColumn.Header>
-                        <CheckBox Name="cbAnalyseHiddenVisuals" Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenVisuals.Header}" IsThreeState="True" IsChecked="{Binding DataContext.AnalyseHiddenVisualsAllChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}"/>
+                        <CheckBox Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenVisuals.Header}" IsThreeState="True" IsChecked="{Binding DataContext.AnalyseHiddenVisualsAllChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}"/>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox Name="cbAnalyseHiddenVisualsForRow" IsChecked="{Binding AnalyseHiddenVisuals, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Tag="{Binding ReportId}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <CheckBox IsChecked="{Binding AnalyseHiddenVisuals, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Tag="{Binding ReportId}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
