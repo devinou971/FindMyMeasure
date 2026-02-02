@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
-namespace FindMyMeasure.Gui.MVVM
+namespace FindMyMeasure.Gui.MVVM.Models
 {
     public class ReportAnalysisConfiguration : IEquatable<ReportAnalysisConfiguration>, INotifyPropertyChanged
     {

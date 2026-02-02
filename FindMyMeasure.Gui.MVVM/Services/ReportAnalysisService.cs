@@ -6,10 +6,8 @@ using FindMyMeasure.PowerBI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
-using static FindMyMeasure.Gui.MVVM.ReportAnalysisConfiguration;
+using static FindMyMeasure.Gui.MVVM.Models.ReportAnalysisConfiguration;
 
 namespace FindMyMeasure.Gui.MVVM.Services
 {

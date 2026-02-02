@@ -14,7 +14,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using static FindMyMeasure.Gui.MVVM.ReportAnalysisConfiguration;
+using static FindMyMeasure.Gui.MVVM.Models.ReportAnalysisConfiguration;
 
 namespace FindMyMeasure.Gui.MVVM.ViewModels
 {

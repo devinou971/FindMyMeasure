@@ -1,4 +1,5 @@
 ﻿using FindMyMeasure.Database;
+using FindMyMeasure.Gui.MVVM.Models;
 using FindMyMeasure.Interfaces;
 using FindMyMeasure.PowerBI;
 using System;
