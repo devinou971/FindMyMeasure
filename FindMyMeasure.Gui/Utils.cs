@@ -116,10 +116,10 @@ namespace FindMyMeasure
             switch (Thread.CurrentThread.CurrentCulture.Name)
             {
                 case "fr-FR":
-                    languageDict.Source = new Uri("pack://application:,,,/FindMyMeasure.Gui.MVVM;component/Resources/StringResources.fr-FR.xaml", UriKind.Absolute);
+                    languageDict.Source = new Uri("pack://application:,,,/FindMyMeasure.Gui;component/Resources/StringResources.fr-FR.xaml", UriKind.Absolute);
                     break;
                 default:
-                    languageDict.Source = new Uri("pack://application:,,,/FindMyMeasure.Gui.MVVM;component/Resources/StringResources.xaml", UriKind.Absolute);
+                    languageDict.Source = new Uri("pack://application:,,,/FindMyMeasure.Gui;component/Resources/StringResources.xaml", UriKind.Absolute);
                     break;
             }
             return languageDict;

@@ -2,7 +2,7 @@
 using FindMyMeasure.Interfaces;
 using System;
 
-namespace FindMyMeasure.Gui.MVVM.Models
+namespace FindMyMeasure.Gui.Models
 {
     public class DataGridUsageRecord
     {

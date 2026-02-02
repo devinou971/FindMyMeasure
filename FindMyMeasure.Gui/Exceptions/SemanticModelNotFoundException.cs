@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FindMyMeasure.Gui.MVVM.Exceptions
+namespace FindMyMeasure.Gui.Exceptions
 {
     internal class SemanticModelNotFoundException : Exception
     {

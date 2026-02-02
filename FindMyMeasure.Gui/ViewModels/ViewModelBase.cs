@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace FindMyMeasure.Gui.MVVM.ViewModels
+namespace FindMyMeasure.Gui.ViewModels
 {
     public class ViewModelBase : INotifyPropertyChanged
     {

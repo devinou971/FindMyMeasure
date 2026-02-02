@@ -1,11 +1,11 @@
 ﻿using FindMyMeasure.Database;
-using FindMyMeasure.Gui.MVVM.Models;
-using FindMyMeasure.Gui.MVVM.ViewModels;
+using FindMyMeasure.Gui.Models;
+using FindMyMeasure.Gui.ViewModels;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace FindMyMeasure.Gui.MVVM
+namespace FindMyMeasure.Gui
 {
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml

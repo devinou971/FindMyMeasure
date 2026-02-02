@@ -1,5 +1,5 @@
 ﻿using FindMyMeasure.Database;
-using FindMyMeasure.Gui.MVVM.Models;
+using FindMyMeasure.Gui.Models;
 using FindMyMeasure.Interfaces;
 using FindMyMeasure.PowerBI;
 using System;
@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace FindMyMeasure.Gui.MVVM.ViewModels
+namespace FindMyMeasure.Gui.ViewModels
 {
     internal class MainWindowViewModel : ViewModelBase
     {

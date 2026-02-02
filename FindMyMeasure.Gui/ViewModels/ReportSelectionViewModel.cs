@@ -1,6 +1,6 @@
-﻿using FindMyMeasure.Gui.MVVM.Commands;
-using FindMyMeasure.Gui.MVVM.Models;
-using FindMyMeasure.Gui.MVVM.Services;
+﻿using FindMyMeasure.Gui.Commands;
+using FindMyMeasure.Gui.Models;
+using FindMyMeasure.Gui.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,9 +14,9 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using static FindMyMeasure.Gui.MVVM.Models.ReportAnalysisConfiguration;
+using static FindMyMeasure.Gui.Models.ReportAnalysisConfiguration;
 
-namespace FindMyMeasure.Gui.MVVM.ViewModels
+namespace FindMyMeasure.Gui.ViewModels
 {
     public class ReportSelectionViewModel : ViewModelBase
     {

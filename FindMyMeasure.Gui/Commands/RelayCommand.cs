@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace FindMyMeasure.Gui.MVVM.Commands
+namespace FindMyMeasure.Gui.Commands
 {
     public class RelayCommand : ICommand
     {

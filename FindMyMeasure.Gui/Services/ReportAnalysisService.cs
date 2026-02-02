@@ -1,15 +1,15 @@
 ﻿using FindMyMeasure.Database;
 using FindMyMeasure.Enums;
-using FindMyMeasure.Gui.MVVM.Exceptions;
-using FindMyMeasure.Gui.MVVM.Models;
+using FindMyMeasure.Gui.Exceptions;
+using FindMyMeasure.Gui.Models;
 using FindMyMeasure.PowerBI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static FindMyMeasure.Gui.MVVM.Models.ReportAnalysisConfiguration;
+using static FindMyMeasure.Gui.Models.ReportAnalysisConfiguration;
 
-namespace FindMyMeasure.Gui.MVVM.Services
+namespace FindMyMeasure.Gui.Services
 {
     internal class ReportAnalysisService
     {

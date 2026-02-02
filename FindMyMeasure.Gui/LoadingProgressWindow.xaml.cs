@@ -1,7 +1,7 @@
-﻿using FindMyMeasure.Gui.MVVM.ViewModels;
+﻿using FindMyMeasure.Gui.ViewModels;
 using System.Windows;
 
-namespace FindMyMeasure.Gui.MVVM
+namespace FindMyMeasure.Gui
 {
     /// <summary>
     /// Logique d'interaction pour LoadingProgressWindow.xaml
