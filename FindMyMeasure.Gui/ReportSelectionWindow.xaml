@@ -9,9 +9,8 @@
         Title="{DynamicResource ReportSelectionWindow.Title}" Height="450" Width="800">
 
     <Window.Resources>
-        <!-- Style pour bouton icône : fond rouge, icône blanche, coins arrondis -->
+        <!-- Delete button style -->
         <Style x:Key="IconButtonStyle" TargetType="Button">
-            
             <Setter Property="Width" Value="30"/>
             <Setter Property="Height" Value="30"/>
             <Setter Property="Background" Value="Red"/>
@@ -51,10 +50,12 @@
         <Label VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Width="162">FindMyMeasure</Label>
         <StackPanel Grid.Row="1" Margin="0,10,0,10" >
             <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{DynamicResource ReportSelectionWindow.SelectionTextBlock.Text}" />
-            <Button Margin="0,10,0,0" Grid.Row="1" Name="bImportReports" Content="{DynamicResource ReportSelectionWindow.Button.ImportReport.Content}" Width="156" HorizontalAlignment="Left" Click="bImportReports_Click" />
+            <!-- Import report button -->
+            <Button Margin="0,10,0,0" Grid.Row="1" Content="{DynamicResource ReportSelectionWindow.Button.ImportReport.Content}" Width="156" HorizontalAlignment="Left" Click="bImportReports_Click" />
         </StackPanel>
 
-        <DataGrid Grid.Row="2" Margin="0,0,0,10" Name="dgReportList" Height="Auto" AutoGenerateColumns="False" CanUserAddRows="False">
+        <!-- Reports list -->
+        <DataGrid ItemsSource="{Binding ReportConfigList}" Grid.Row="2" Margin="0,0,0,10" Height="Auto" AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding ModelName}" Width="*" IsReadOnly="True">
                     <DataGridTextColumn.Header>
@@ -68,32 +69,35 @@
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
 
-                <DataGridTemplateColumn Visibility="Collapsed" x:Name="colAnalyseHiddenPages">
+                <!-- A checkbox column to chose whether to analyse hidden pages or not -->
+                <DataGridTemplateColumn>
                     <DataGridTemplateColumn.Header>
-                        <CheckBox Name="cbAnalyseHiddenPages" Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenPages.Header}" IsThreeState="True" Click="cbAnalyseHiddenPages_Click" />
+                        <CheckBox Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenPages.Header}" IsThreeState="True" IsChecked="{Binding DataContext.AnalyseHiddenPagesAllChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}"/>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox Name="cbAnalyseHiddenPagesForRow" IsChecked="{Binding AnalyseHiddenPages, Mode=OneWay}" Click="cbAnalyseHiddenPagesForRow_Click" Tag="{Binding ReportId}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <CheckBox IsChecked="{Binding AnalyseHiddenPages, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Tag="{Binding ReportId}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn Visibility="Collapsed" x:Name="colAnalyseHiddenVisuals">
+                <!-- A checkbox column to chose whether to analyse hidden visuals or not -->
+                <DataGridTemplateColumn>
                     <DataGridTemplateColumn.Header>
-                        <CheckBox Name="cbAnalyseHiddenVisuals" Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenVisuals.Header}" IsThreeState="True" Click="cbAnalyseHiddenVisuals_Click" />
+                        <CheckBox Content="{DynamicResource ReportSelectionWindow.Column.LoadHiddenVisuals.Header}" IsThreeState="True" IsChecked="{Binding DataContext.AnalyseHiddenVisualsAllChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}"/>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox Name="cbAnalyseHiddenVisualsForRow" IsChecked="{Binding AnalyseHiddenVisuals, Mode=OneWay}" Click="cbAnalyseHiddenVisualsForRow_Click" Tag="{Binding ReportId}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <CheckBox IsChecked="{Binding AnalyseHiddenVisuals, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Tag="{Binding ReportId}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
+                <!-- Delete button column -->
                 <DataGridTemplateColumn Header="" Width="40">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Style="{StaticResource IconButtonStyle}" ToolTip="Supprimer" Click="bRemoveReport" Tag="{Binding ReportId}">
+                            <Button Style="{StaticResource IconButtonStyle}" ToolTip="Supprimer" Command="{Binding DataContext.RemoveReportCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding ReportId}" Tag="{Binding ReportId}">
                                 <Viewbox Width="14" Height="14">
                                     <Path Fill="White" Data="M6,19A2,2 0 0,0 8,21 H16 A2,2 0 0,0 18,19 V7 H6 V19 Z M19,4 H15.5 L14.79,3 H9.21 L8.5,4 H5 V6 H19 V4 Z" />
                                 </Viewbox>
@@ -111,11 +115,8 @@
             </DataGrid.Resources>
         </DataGrid>
 
-        <StackPanel Grid.Row="3">
-            <CheckBox Name="cbShowAdvancedOptions" Content="{DynamicResource ReportSelectionWindow.CheckBox.ShowAdvancedOptions.Content}" Click="cbShowAdvancedOptions_Click"/>
-        </StackPanel>
-
-        <Button Grid.Row="4" Content="{DynamicResource ReportSelectionWindow.Button.StartAnalysis.Content}" Width="100" HorizontalAlignment="Right" Click="bStartAnalysis"/>
-
+        <!-- Start Analysis button -->
+        <Button Grid.Row="4" Content="{DynamicResource ReportSelectionWindow.Button.StartAnalysis.Content}" Width="100" HorizontalAlignment="Right" Command="{Binding StartAnalysisCommand}"/>
+        
     </Grid>
 </Window>

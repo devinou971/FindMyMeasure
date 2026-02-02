@@ -1,35 +1,28 @@
-﻿using FindMyMeasure.Database;
-using FindMyMeasure.Enums;
+﻿using FindMyMeasure.Enums;
 using FindMyMeasure.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
-namespace FindMyMeasure.Gui
+namespace FindMyMeasure.Gui.Models
 {
     public class DataGridUsageRecord
     {
         static private int Next_id = 0;
         private int _id;
         public IDataInput DataInput { get; }
-        public string Type { get; }
-        public string Name { get; }
+        public string Type { get => this.DataInput.Type; }
+        public string Name { get => this.DataInput.Name; }
         public string Model { get; }
-        public string Table { get; }
+        public string Table { get => this.DataInput.ParentTable.Name; }
         public int NbOfUsage { get; }
-        public UsageState UsageState { get; } 
+        public UsageState UsageState { get; }
+        public String Expression { get => DataInput.Expression; }
+        public bool HasExpression { get => !string.IsNullOrEmpty(this.Expression); }
 
         public DataGridUsageRecord(IDataInput dataInput, string SemanticModeName)
         {
             _id = Next_id++;
             DataInput = dataInput;
             Model = SemanticModeName;
-            Type = this.DataInput.Type;
-            Name = this.DataInput.Name;
-            Table = this.DataInput.ParentTable.Name;
             NbOfUsage = this.DataInput.GetDependents().Count;
             UsageState = this.DataInput.GetUsageState();
         }
@@ -38,11 +31,11 @@ namespace FindMyMeasure.Gui
         {
             if (obj == null)
                 return false;
-            if(obj is DataGridUsageRecord dataRecord)
+            if (obj is DataGridUsageRecord dataRecord)
             {
                 return dataRecord._id == this._id;
             }
-            return false ;
+            return false;
         }
 
         public override int GetHashCode()

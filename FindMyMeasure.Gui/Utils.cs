@@ -31,7 +31,7 @@ namespace FindMyMeasure
                     semanticModels.Add(semanticModel);
                 }
             }
-            
+
             return semanticModels;
         }
 

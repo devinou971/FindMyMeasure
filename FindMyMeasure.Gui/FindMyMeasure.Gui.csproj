@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2A7D1F4D-C31E-422A-9323-15842D99D1EE}</ProjectGuid>
+    <ProjectGuid>{4C1F3996-4CA5-4F4A-8C68-AB836FE307F6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>FindMyMeasure.Gui</RootNamespace>
     <AssemblyName>FindMyMeasure.Gui</AssemblyName>
@@ -100,7 +100,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Models\ReportAnalysisResult.cs" />
+    <Compile Include="Services\ReportAnalysisService.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\ReportSelectionViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="LoadingProgressWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -117,8 +123,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ReportAnalysisConfiguration.cs" />
-    <Compile Include="DataGridUsageRecord.cs" />
+    <Compile Include="Models\ReportAnalysisConfiguration.cs" />
+    <Compile Include="Models\DataGridUsageRecord.cs" />
     <Compile Include="Exceptions\SemanticModelNotFoundException.cs" />
     <Compile Include="LoadingProgressWindow.xaml.cs">
       <DependentUpon>LoadingProgressWindow.xaml</DependentUpon>
@@ -172,6 +178,7 @@
       <Name>FindMyMeasure</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets" Condition="Exists('..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

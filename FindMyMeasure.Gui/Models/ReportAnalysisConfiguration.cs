@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
-namespace FindMyMeasure.Gui
+namespace FindMyMeasure.Gui.Models
 {
     public class ReportAnalysisConfiguration : IEquatable<ReportAnalysisConfiguration>, INotifyPropertyChanged
     {
@@ -56,7 +56,7 @@ namespace FindMyMeasure.Gui
 
 
         [JsonIgnore]
-        public int ReportId { get => this._intReportId ; }
+        public int ReportId { get => this._intReportId; }
 
         [JsonPropertyName("ReportName")]
         [JsonInclude]
@@ -76,26 +76,32 @@ namespace FindMyMeasure.Gui
 
         [JsonPropertyName("AnalyseHiddenPages")]
         [JsonInclude]
-        public bool AnalyseHiddenPages { 
-            get =>  this._analyseHiddenPages;
-            set{
-                if(this._analyseHiddenPages != value){
+        public bool AnalyseHiddenPages
+        {
+            get => this._analyseHiddenPages;
+            set
+            {
+                if (this._analyseHiddenPages != value)
+                {
                     this._analyseHiddenPages = value;
                     OnPropertyChanged(nameof(AnalyseHiddenPages));
                 }
-            } 
+            }
         }
 
         [JsonPropertyName("AnalyseHiddenVisuals")]
         [JsonInclude]
-        public bool AnalyseHiddenVisuals { 
-            get => this._analyseHiddenVisuals; 
-            set {
-                if(this._analyseHiddenVisuals != value){
+        public bool AnalyseHiddenVisuals
+        {
+            get => this._analyseHiddenVisuals;
+            set
+            {
+                if (this._analyseHiddenVisuals != value)
+                {
                     this._analyseHiddenVisuals = value;
                     OnPropertyChanged(nameof(AnalyseHiddenVisuals));
                 }
-            } 
+            }
         }
 
         [JsonPropertyName("ModelType")]
