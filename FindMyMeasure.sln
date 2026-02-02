@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportUsagesToCsv", "Exampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListBrokenVisuals", "Examples\ListBrokenVisuals\ListBrokenVisuals.csproj", "{1B1DFB83-8171-4CE7-9548-CAD163086A4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindMyMeasure.Gui.MVVM", "FindMyMeasure.Gui.MVVM\FindMyMeasure.Gui.MVVM.csproj", "{4C1F3996-4CA5-4F4A-8C68-AB836FE307F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindMyMeasure.Gui", "FindMyMeasure.Gui\FindMyMeasure.Gui.csproj", "{4C1F3996-4CA5-4F4A-8C68-AB836FE307F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
