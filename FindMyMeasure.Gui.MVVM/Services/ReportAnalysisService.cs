@@ -27,12 +27,8 @@ namespace FindMyMeasure.Gui.MVVM.Services
             HashSet<PowerBIReport> powerBIReports = LoadReports(this.reportConfigs, semanticModels, progressMessage, progressValue);
             progressValue.Report(90);
             HashSet<DataGridUsageRecord> usageRecords = ProcessUsageRecords(semanticModels);
+            progressValue.Report(100);
             return new ReportAnalysisResult(semanticModels, reportConfigs, usageRecords);
-            //{
-            //    SemanticModels = semanticModels,
-            //    PowerBIReports = powerBIReports,
-            //    UsageRecords = usageRecords
-            //};
         }
 
         private HashSet<SemanticModel> LoadSemanticModels(IEnumerable<ReportAnalysisConfiguration> dataGridReports, IProgress<string> progressMessage, IProgress<double> progressValue)

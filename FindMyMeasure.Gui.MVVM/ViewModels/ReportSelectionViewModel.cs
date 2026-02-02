@@ -30,6 +30,8 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
         private ObservableCollection<String> _analysisProgressMessages = new ObservableCollection<String>();
         private ReportAnalysisResult _analysisResult;
 
+        public event EventHandler<string> ErrorOccured;
+
         public ICommand RemoveReportCommand { get ; }
         public ICommand StartAnalysisCommand { get; }
 
@@ -57,6 +59,8 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             this._reportConfigList.CollectionChanged += OnReportListChanged;
             foreach (var report in this._reportConfigList)
                 report.PropertyChanged += OnReportConfigChanged;
+            RecalculateAnalyseHiddenPagesAllChecked();
+            RecalculateAnalyseHiddenVisualsAllChecked();
         }
 
 
@@ -203,13 +207,21 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
         private async void StartAnalysisAsync()
         {
             this.IsBusy = true;
-
-            var analysisService = new ReportAnalysisService(this.ReportConfigList.ToList()); // We send a copy in case of collection modified exception
-            Progress<double> progressValue = new Progress<double>(p => this.AnalysisProgressValue = p);
-            Progress<string> progressMessage = new Progress<string>(m => this.AnalysisProgressMessages.Add(m));
-            this._analysisResult = await Task.Run(() => { return analysisService.RunAsync(progressValue, progressMessage); });
-
-            this.IsBusy = false;
+            try
+            {
+                var analysisService = new ReportAnalysisService(this.ReportConfigList.ToList()); // We send a copy in case of collection modified exception
+                Progress<double> progressValue = new Progress<double>(p => this.AnalysisProgressValue = p);
+                Progress<string> progressMessage = new Progress<string>(m => this.AnalysisProgressMessages.Add(m));
+                this._analysisResult = await Task.Run(() => { return analysisService.RunAsync(progressValue, progressMessage); });
+                SaveReportsList();
+            } catch (Exception e)
+            {
+                this.ErrorOccured?.Invoke(this, e.Message);
+            }
+            finally
+            {
+                this.IsBusy = false;
+            }
         }
 
         private void OnReportListChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -296,6 +308,29 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
             }
         }
 
+        private void SaveReportsList()
+        {
+            IEnumerable<string> reportPaths = this._reportConfigList.Select(x => x.ReportPath);
+
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(this._reportConfigList.ToList(), options);
+
+            try
+            {
+                string savePath = Properties.Settings.Default.LastRunSavePath;
+
+                using (StreamWriter writer = new StreamWriter(savePath, false))
+                    writer.Write(jsonString);
+            }
+            catch (System.IO.IOException e)
+            {
+                this.ErrorOccured?.Invoke(this, $"Could not write the file {Properties.Settings.Default.LastRunSavePath}. Error details : {e.Message}");
+            }
+            catch (JsonException e)
+            {
+                this.ErrorOccured?.Invoke(this, $"Could not serialize file {Properties.Settings.Default.LastRunSavePath}. Here are error details : {e.Message}");
+            }
+        }
 
     }
 }
