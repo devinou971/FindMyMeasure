@@ -304,7 +304,7 @@ namespace FindMyMeasure.Gui.MVVM.ViewModels
         {
             if (this._reportConfigList.All(x => x.AnalyseHiddenPages))
                 this._analyseHiddenPagesAllChecked = true;
-            else if (this._reportConfigList.All(x => !x.AnalyseHiddenVisuals))
+            else if (this._reportConfigList.All(x => !x.AnalyseHiddenPages))
                 this._analyseHiddenPagesAllChecked = false;
             else 
                 this._analyseHiddenPagesAllChecked = null;
