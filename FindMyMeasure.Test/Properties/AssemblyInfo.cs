@@ -5,10 +5,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("FindMyMeasure.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HP")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("FindMyMeasure.Test")]
-[assembly: AssemblyCopyright("Copyright © HP 2025")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]
