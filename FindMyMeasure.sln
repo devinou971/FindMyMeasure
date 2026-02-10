@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListBrokenVisuals", "Exampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindMyMeasure.Gui", "FindMyMeasure.Gui\FindMyMeasure.Gui.csproj", "{4C1F3996-4CA5-4F4A-8C68-AB836FE307F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindMyMeasure.Gui.Test", "FindMyMeasure.Gui.Test\FindMyMeasure.Gui.Test.csproj", "{3EBE9D18-7EB2-42E6-A9C5-E33B857C8866}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{4C1F3996-4CA5-4F4A-8C68-AB836FE307F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C1F3996-4CA5-4F4A-8C68-AB836FE307F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C1F3996-4CA5-4F4A-8C68-AB836FE307F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EBE9D18-7EB2-42E6-A9C5-E33B857C8866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EBE9D18-7EB2-42E6-A9C5-E33B857C8866}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EBE9D18-7EB2-42E6-A9C5-E33B857C8866}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EBE9D18-7EB2-42E6-A9C5-E33B857C8866}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

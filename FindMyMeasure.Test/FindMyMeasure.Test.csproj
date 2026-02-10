@@ -91,6 +91,10 @@
       <Link>testReports\Store Sales.pbix</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\ReportSamples\SSAS_Source1_Basic_visuals.pbix">
+      <Link>testReports\SSAS_Source1_Basic_visuals.pbix</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
