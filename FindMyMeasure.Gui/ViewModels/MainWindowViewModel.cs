@@ -17,8 +17,8 @@ namespace FindMyMeasure.Gui.ViewModels
         private CancellationTokenSource _filterCts;
         private IEnumerable<DataGridUsageRecord> _filteredRecords;
 
-        private HashSet<SemanticModel> _semanticModels;
-        private IEnumerable<DataGridUsageRecord> _usageRecords;
+        private readonly HashSet<SemanticModel> _semanticModels;
+        private readonly IEnumerable<DataGridUsageRecord> _usageRecords;
 
         public CollectionViewSource UsageRecordsView { get; }
 
@@ -148,9 +148,9 @@ namespace FindMyMeasure.Gui.ViewModels
                     SemanticModelDependents.Add(new
                     {
                         Type = dependent.Type,
-                        Name = (dependent is IDataInput) ? $"{dependent.Name} ({((IDataInput)dependent).GetUsageState()})" : dependent.Name,
+                        Name = (dependent is IDataInput input) ? $"{dependent.Name} ({input.GetUsageState()})" : dependent.Name,
                         TableName = (dependent is IDataInput) ? ((IDataInput)dependent).ParentTable.Name :
-                                (dependent is Relationship) ? ((Relationship)dependent).FromColumn.ParentTable.Name + " -> " + ((Relationship)dependent).ToColumn.ParentTable.Name :
+                                (dependent is Relationship relationship) ? relationship.FromColumn.ParentTable.Name + " -> " + relationship.ToColumn.ParentTable.Name :
                                 ""
                     });
                 }
@@ -214,10 +214,9 @@ namespace FindMyMeasure.Gui.ViewModels
         /// view when complete.
         /// </summary>
         /// <param name="debounceDelayMilliseconds">Delay in milliseconds to debounce rapid calls.</param>
-        private async void FilterRows(int debounceDelayMilliseconds = 300)
+        private async Task FilterRows(int debounceDelayMilliseconds = 300)
         {
-            if (_filterCts != null)
-                _filterCts.Cancel();
+            _filterCts?.Cancel();
             _filterCts = new CancellationTokenSource();
             var token = _filterCts.Token;
             try

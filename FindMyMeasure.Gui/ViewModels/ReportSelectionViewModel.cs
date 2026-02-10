@@ -63,7 +63,7 @@ namespace FindMyMeasure.Gui.ViewModels
             StartAnalysisCommand = new RelayCommand(action =>
             {
                 StartAnalysisAsync();
-            });
+            }, (object _) => { return !this.IsBusy; } );
 
             foreach (var reportConfig in reportConfigs)
                 this._reportConfigList.Add(reportConfig);
@@ -167,12 +167,6 @@ namespace FindMyMeasure.Gui.ViewModels
                 report.AnalyseHiddenVisuals = analyseHiddenVisuals;
         }
 
-
-        public void AddReportConfigToList(ReportAnalysisConfiguration reportAnalysisConfiguration)
-        {
-            this._reportConfigList.Add(reportAnalysisConfiguration);
-        }
-
         /// <summary>
         /// Extracts metadata from the specified PBIX file and creates a
         /// corresponding `ReportAnalysisConfiguration`. The configuration is
@@ -235,7 +229,7 @@ namespace FindMyMeasure.Gui.ViewModels
         /// Starts the analysis process on a background thread and updates progress
         /// and result properties. Exceptions are reported via `ErrorOccured` event handler.
         /// </summary>
-        private async void StartAnalysisAsync()
+        private async Task StartAnalysisAsync()
         {
             this.IsBusy = true;
             try
