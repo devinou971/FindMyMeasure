@@ -25,18 +25,6 @@ namespace FindMyMeasure.Gui.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool AnalyseHiddenPages {
-            get {
-                return ((bool)(this["AnalyseHiddenPages"]));
-            }
-            set {
-                this["AnalyseHiddenPages"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool AnalyseHiddenVisuals {
             get {
@@ -56,6 +44,18 @@ namespace FindMyMeasure.Gui.Properties {
             }
             set {
                 this["LastRunSavePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AnalyseHiddenPages {
+            get {
+                return ((bool)(this["AnalyseHiddenPages"]));
+            }
+            set {
+                this["AnalyseHiddenPages"] = value;
             }
         }
     }
