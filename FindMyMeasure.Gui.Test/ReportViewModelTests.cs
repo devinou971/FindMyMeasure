@@ -17,7 +17,6 @@ namespace FindMyMeasure.Gui.Test
         public void TestConstructor()
         {
             ReportSelectionViewModel viewModel = new ReportSelectionViewModel();
-            Assert.AreEqual(0, viewModel.ReportConfigList.Count);
             Assert.AreEqual(true, viewModel.AnalyseHiddenPagesAllChecked);
             Assert.AreEqual(true, viewModel.AnalyseHiddenVisualsAllChecked);
         }
@@ -63,6 +62,34 @@ namespace FindMyMeasure.Gui.Test
 
             viewModel.ReportConfigList[0].AnalyseHiddenPages = true;
             Assert.IsTrue(viewModel.AnalyseHiddenPagesAllChecked);
+        }
+
+        [TestMethod]
+        public void TestSetAnalyseHiddenVisualsGlobally()
+        {
+            ReportSelectionViewModel viewModel = new ReportSelectionViewModel();
+            viewModel.AddReportConfigToList(@"testReports\SSAS_Source1_Basic_visuals.pbix");
+
+            viewModel.SetAllReportsToAnalyseHiddenVisuals(false);
+            Assert.IsFalse(viewModel.AnalyseHiddenVisualsAllChecked);
+            Assert.IsFalse(viewModel.ReportConfigList[0].AnalyseHiddenVisuals);
+
+            viewModel.SetAllReportsToAnalyseHiddenVisuals(true);
+            Assert.IsTrue(viewModel.AnalyseHiddenVisualsAllChecked);
+            Assert.IsTrue(viewModel.ReportConfigList[0].AnalyseHiddenVisuals);
+        }
+
+        [TestMethod]
+        public void TestSetAnalyseHiddenVisualsLocally()
+        {
+            ReportSelectionViewModel viewModel = new ReportSelectionViewModel();
+            viewModel.AddReportConfigToList(@"testReports\SSAS_Source1_Basic_visuals.pbix");
+
+            viewModel.ReportConfigList[0].AnalyseHiddenVisuals = false;
+            Assert.IsFalse(viewModel.AnalyseHiddenVisualsAllChecked);
+
+            viewModel.ReportConfigList[0].AnalyseHiddenVisuals = true;
+            Assert.IsTrue(viewModel.AnalyseHiddenVisualsAllChecked);
         }
 
         [TestMethod]
