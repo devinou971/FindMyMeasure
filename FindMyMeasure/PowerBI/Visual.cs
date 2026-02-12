@@ -11,21 +11,24 @@ namespace FindMyMeasure.PowerBI
     {
 
         private string _name;
+        private string _visualTitle;
         private string _visualType;
         private ReportPage _parentPage;
         private HashSet<IDataInput> _dataInputs = new HashSet<IDataInput>();
         private HashSet<Filter> _filters = new HashSet<Filter>();
 
-        public override string Name => this._name;
-        public string VisualType => this._visualType;
+        public override string Name { get => this._name; } 
+        public string Title { get => this._visualTitle; } 
+        public string VisualType { get => this._visualType; } 
 
         public string Type { get { return this._visualType; } }
 
-        private Visual(string name, String visualType, ReportPage parentPage)
+        private Visual(string visualName, string visualTitle, string visualType, ReportPage parentPage)
         {
-            this._name = name;
+            this._name = visualName;
             this._visualType = visualType;
             this._parentPage = parentPage;
+            this._visualTitle = visualTitle;
         }
 
         public bool AddDataInput(IDataInput input)
@@ -58,12 +61,15 @@ namespace FindMyMeasure.PowerBI
                 // This can happend for visual groups, which are not analysed for now
                 return null; 
             }
+            
             string visualTypeStr = singleVisual["visualType"].ToString();
             JsonNode displayNode = singleVisual["display"];
             if(!analyseHiddenVisuals && displayNode != null && displayNode["mode"] != null && displayNode["mode"].GetValue<String>() == "hidden")
                 return null;
 
-            Visual visual = new Visual(visualName, visualTypeStr, parentPage);
+            var visualTitle = singleVisual["vcObjects"]?["title"]?[0]?["properties"]?["text"]?["expr"]?["Literal"]?["Value"]?.GetValue<string>();
+            
+            Visual visual = new Visual(visualName, visualTitle, visualTypeStr, parentPage);
             
             if (visualNode["filters"] != null)
             {

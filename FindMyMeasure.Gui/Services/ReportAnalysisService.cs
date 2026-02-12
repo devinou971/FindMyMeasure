@@ -2,6 +2,7 @@
 using FindMyMeasure.Enums;
 using FindMyMeasure.Gui.Exceptions;
 using FindMyMeasure.Gui.Models;
+using FindMyMeasure.Interfaces;
 using FindMyMeasure.PowerBI;
 using System;
 using System.Collections.Generic;
@@ -113,21 +114,11 @@ namespace FindMyMeasure.Gui.Services
             HashSet<DataGridUsageRecord> usageRecords = new HashSet<DataGridUsageRecord>();
             foreach (var semanticModel in semanticModels)
             {
-                foreach (var measure in semanticModel.GetMeasures())
-                {
-                    UsageState usageState = measure.GetUsageState();
-                    usageRecords.Add(new DataGridUsageRecord(measure, semanticModel.Name));
-                }
-                foreach (var column in semanticModel.GetColumns())
-                {
-                    UsageState usageState = column.GetUsageState();
-                    usageRecords.Add(new DataGridUsageRecord(column, semanticModel.Name));
-                }
-                foreach (var hierarchy in semanticModel.GetHierarchies())
-                {
-                    UsageState usageState = hierarchy.GetUsageState();
-                    usageRecords.Add(new DataGridUsageRecord(hierarchy, semanticModel.Name));
-                }
+                var dataInputs = semanticModel.GetMeasures().Cast<IDataInput>();
+                dataInputs = dataInputs.Union(semanticModel.GetColumns());
+                dataInputs = dataInputs.Union(semanticModel.GetHierarchies());
+                foreach (var dataInput in dataInputs)
+                    usageRecords.Add(new DataGridUsageRecord(dataInput, semanticModel.Name));
             }
             return usageRecords;
         }

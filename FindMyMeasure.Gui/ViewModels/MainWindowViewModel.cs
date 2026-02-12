@@ -158,14 +158,17 @@ namespace FindMyMeasure.Gui.ViewModels
                 {
                     string reportName = "";
                     string pageName = "";
+                    string nodeName = "";
                     if (dependent is Visual)
                     {
                         pageName = ((Visual)dependent).GetReportPage().Name;
                         reportName = ((Visual)dependent).GetReportPage().GetPowerBIReport().Name;
+                        nodeName = ((Visual)dependent).Title ?? ((Visual)dependent).Name;
                     }
                     else if (dependent is Filter)
                     {
                         var filterParent = ((Filter)dependent).GetParent();
+                        nodeName = ((Filter)dependent).Name;
                         if (filterParent is Visual)
                         {
                             pageName = ((Visual)filterParent).GetReportPage().Name;
@@ -184,7 +187,7 @@ namespace FindMyMeasure.Gui.ViewModels
                     this.ReportDependents.Add(new
                     {
                         Type = dependent.Type,
-                        Name = ((IPowerBILeafNode)dependent).Name,
+                        Name = nodeName,
                         ReportName = reportName,
                         PageName = pageName
                     });
