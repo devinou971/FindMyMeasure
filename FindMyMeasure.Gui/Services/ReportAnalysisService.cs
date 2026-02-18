@@ -1,8 +1,8 @@
 ﻿using FindMyMeasure.Database;
-using FindMyMeasure.Enums;
 using FindMyMeasure.Gui.Exceptions;
 using FindMyMeasure.Gui.Models;
 using FindMyMeasure.Interfaces;
+using FindMyMeasure.Loaders;
 using FindMyMeasure.PowerBI;
 using System;
 using System.Collections.Generic;
@@ -95,7 +95,7 @@ namespace FindMyMeasure.Gui.Services
                     else
                         semanticModel = semanticModels.FirstOrDefault<SemanticModel>(x => x.ConnectionString.Equals(obj.report.ModelConnectionString));
                     progressMessage.Report($"Loading PowerBI report : {obj.report.ReportName} ...");
-                    PowerBIReport powerBIReport = PowerBIReport.LoadFromPbix(obj.report.ReportPath, semanticModel, obj.report.AnalyseHiddenPages, obj.report.AnalyseHiddenVisuals); // TODO : Make this async ?
+                    PowerBIReport powerBIReport = PowerBIReportLoader.LoadFromPbix(obj.report.ReportPath, semanticModel, obj.report.AnalyseHiddenPages, obj.report.AnalyseHiddenVisuals); // TODO : Make this async ?
                     powerBIReports.Add(powerBIReport);
                     double progressPercent = 45 + (obj.index + 1.0) / dataGridReports.Count() * 55;
                     progressValue.Report(progressPercent);

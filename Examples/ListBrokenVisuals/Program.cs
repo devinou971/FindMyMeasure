@@ -1,13 +1,11 @@
 ﻿using FindMyMeasure;
 using FindMyMeasure.Database;
 using FindMyMeasure.Interfaces;
+using FindMyMeasure.Loaders;
 using FindMyMeasure.PowerBI;
 using FindMyMeasure.WarningClasses;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ListBrokenVisuals
 {
@@ -62,7 +60,7 @@ namespace ListBrokenVisuals
 
             // Load the example Power BI report and run the analysis. The LoadFromPbix call will trigger
             // analysis that may publish missing column/measure warnings which our subscriber will receive.
-            PowerBIReport report = PowerBIReport.LoadFromPbix(@"reportExamples\Store Sales - With broken visuals.pbix", semanticModel, true, true);
+            PowerBIReport report = PowerBIReportLoader.LoadFromPbix(@"reportExamples\Store Sales - With broken visuals.pbix", semanticModel, true, true);
 
             // Note: The program intentionally ends here after loading the report because the warnings are
             // printed via the registered subscriber. If further processing or summary output is desired,

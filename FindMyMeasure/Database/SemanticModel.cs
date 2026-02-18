@@ -395,13 +395,13 @@ namespace FindMyMeasure.Database
             return table != null;
         }
 
-        public bool TryFindArtifactByName(string artifactType, string artifactName, string tableName, out DatabaseArtifact artifact)
+        public bool TryFindArtifactByName(string artifactName, string tableName, out DatabaseArtifact artifact)
         {
             if(this._currentRunMode == RunMode.DisconnectedMode)
             {
-                this._databaseArtifacts.Add(new DatabaseArtifact(0, artifactName, artifactType, null));
+                this._databaseArtifacts.Add(new DatabaseArtifact(0, artifactName, null, null)); 
             }
-            artifact = this._databaseArtifacts.FirstOrDefault(a=> a.Name == artifactName && a.Type == artifactType && a.ParentTable.Name == tableName);
+            artifact = this._databaseArtifacts.FirstOrDefault(a=> a.Name == artifactName && a.ParentTable.Name == tableName);
             return artifact != null;
         }
 

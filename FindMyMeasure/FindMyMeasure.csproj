@@ -155,6 +155,10 @@
     <Compile Include="Interfaces\IPowerBILeafNode.cs" />
     <Compile Include="JsonNodeComparer.cs" />
     <Compile Include="JsonNodeExtension.cs" />
+    <Compile Include="Loaders\FilterLoader.cs" />
+    <Compile Include="Loaders\PowerBIReportLoader.cs" />
+    <Compile Include="Loaders\ReportPageLoader.cs" />
+    <Compile Include="Loaders\VisualLoader.cs" />
     <Compile Include="PowerBI\AnalysisWarningPublisher.cs" />
     <Compile Include="PowerBI\Filter.cs" />
     <Compile Include="PowerBI\PowerBINode.cs" />

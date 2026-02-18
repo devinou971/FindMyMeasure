@@ -1,16 +1,12 @@
-﻿using FindMyMeasure.Database;
-using FindMyMeasure.Interfaces;
+﻿using FindMyMeasure;
+using FindMyMeasure.Database;
+using FindMyMeasure.Loaders;
 using FindMyMeasure.PowerBI;
 using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Collections.Specialized;
-using FindMyMeasure;
 
 namespace ExportMeasureLocalisation
 {
@@ -95,7 +91,7 @@ namespace ExportMeasureLocalisation
 
                 // Load the Power BI report and analyze pages/visuals/filters
                 Console.WriteLine("\nLoadind PowerBI Report: " + reportPath + " ...");
-                PowerBIReport powerBIReport = PowerBIReport.LoadFromPbix(reportPath, semanticModel, Properties.Settings.Default.AnalyseHiddenPages, Properties.Settings.Default.AnalyseHiddenVisuals);
+                PowerBIReport powerBIReport = PowerBIReportLoader.LoadFromPbix(reportPath, semanticModel, Properties.Settings.Default.AnalyseHiddenPages, Properties.Settings.Default.AnalyseHiddenVisuals);
                 Console.WriteLine("Nb report pages: " + powerBIReport.GetReportPages().Count);
                 Console.WriteLine("Nb visuals: " + powerBIReport.GetVisuals().Count);
                 Console.WriteLine("Nb filters: " + powerBIReport.GetFilters().Count + "\n\n");
