@@ -242,6 +242,7 @@ namespace FindMyMeasure.Gui.ViewModels
             } catch (Exception e)
             {
                 this.ErrorOccured?.Invoke(this, e.Message);
+                this._analysisProgressMessages.Clear();
             }
             finally
             {
