@@ -1,4 +1,5 @@
 ﻿using FindMyMeasure.Database;
+using FindMyMeasure.Loaders;
 using FindMyMeasure.PowerBI;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -26,8 +27,8 @@ namespace FindMyMeasure.Test
             StoreSalesModel = new SemanticModel("Store Sales", SemanticModel.RunMode.DisconnectedMode);
             CorporateSpendModel = new SemanticModel("Corporate Spend", SemanticModel.RunMode.DisconnectedMode);
 
-            StoreSalesReport = PowerBIReport.LoadFromPbix(@"testReports\Store Sales.pbix", StoreSalesModel, true, true);
-            CorporateSpendReport = PowerBIReport.LoadFromPbix(@"testReports\Corporate Spend.pbix", CorporateSpendModel, true, true);
+            StoreSalesReport = PowerBIReportLoader.LoadFromPbix(@"testReports\Store Sales.pbix", StoreSalesModel, true, true);
+            CorporateSpendReport = PowerBIReportLoader.LoadFromPbix(@"testReports\Corporate Spend.pbix", CorporateSpendModel, true, true);
         }
 
         [TestMethod]
