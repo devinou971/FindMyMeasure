@@ -12,10 +12,10 @@ namespace FindMyMeasure.Gui.Services
     internal class ExportResultsService
     {
         private static string[] charactersToEscape = new string[] {"\\", "\"", "'"};
-        public static async Task ExportAnalysisResultsToCSV(IEnumerable<DataGridUsageRecord> records, string outputPath, Encoding encoding, char sep = ',', char escapeCharacter = '\\')
+        public static void ExportAnalysisResultsToCSV(IEnumerable<DataGridUsageRecord> records, string outputPath, Encoding encoding, char sep = ',', char escapeCharacter = '\\')
         {
             var csvContent = BuildCSVContent(records, sep, escapeCharacter);
-            WriteTextToFile(csvContent, outputPath, encoding);
+            WriteTextToFile(outputPath, csvContent, encoding);
         }
 
         private static string EscapeCharactersInString(string str, char escapeCharacter)
@@ -85,12 +85,6 @@ namespace FindMyMeasure.Gui.Services
 
         private static void WriteTextToFile(string filePath, string text, Encoding encoding)
         {
-            FileAttributes attributes = File.GetAttributes(filePath);
-            if (attributes.HasFlag(FileAttributes.Directory))
-            {
-                throw new Exception("Path is a directory, not a file");
-            }
-
             File.WriteAllText(filePath, text, encoding);
             
         }

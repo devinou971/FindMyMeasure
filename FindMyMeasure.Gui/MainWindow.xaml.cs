@@ -1,6 +1,7 @@
 ﻿using FindMyMeasure.Database;
 using FindMyMeasure.Gui.Models;
 using FindMyMeasure.Gui.ViewModels;
+using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -46,5 +47,16 @@ namespace FindMyMeasure.Gui
             this.Close();
         }
 
+        private void mExportToCSV_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.DefaultExt = ".csv";
+            dialog.Filter = "Document(s) CSV|*.csv";
+
+            bool? result = dialog.ShowDialog();
+            if (result is null || result == false)
+                return;
+            this._viewModel.ExportCommand.Execute(dialog.FileName);
+        }
     }
 }
