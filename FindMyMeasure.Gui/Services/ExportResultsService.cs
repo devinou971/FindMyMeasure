@@ -39,7 +39,8 @@ namespace FindMyMeasure.Gui.Services
                 string artifactTableName = EscapeCharactersInString(record.Table, escapeCharacter);
 
                 if (record.NbOfUsage == 0)
-                    lines.Add($"{record.Model}{sep}{record.Type}{sep}{artifactName}{sep}{artifactTableName}{sep}{record.UsageState.ToString()}{sep}{record.NbOfUsage}{sep}{sep}{sep}{sep}{sep}");
+                    lines.Add($"\"{record.Model}\"{sep}{record.Type}{sep}\"{artifactName}\"{sep}" +
+                        $"\"{artifactTableName}\"{sep}{record.UsageState.ToString()}{sep}{record.NbOfUsage}{sep}{sep}{sep}{sep}{sep}");
                 else
                 {
                     foreach (IModelReferenceTarget dependent in record.DataInput.GetDependents())
@@ -76,7 +77,9 @@ namespace FindMyMeasure.Gui.Services
                                     break;
                             }
                         }
-                        lines.Add($"{record.Model}{sep}{record.Type}{sep}{artifactName}{sep}{artifactTableName}{sep}{record.UsageState}{sep}{record.NbOfUsage}{sep}{usedInType}{sep}{usedInName}{sep}{usedInTable}{sep}{usedInReport}{sep}{usedInReportPage}");
+                        lines.Add($"\"{record.Model}\"{sep}{record.Type}{sep}\"{artifactName}\"{sep}" +
+                            $"\"{artifactTableName}\"{sep}{record.UsageState}{sep}{record.NbOfUsage}{sep}" +
+                            $"{usedInType}{sep}\"{usedInName}\"{sep}\"{usedInTable}\"{sep}\"{usedInReport}\"{sep}\"{usedInReportPage}\"");
                     }
                 }
             }

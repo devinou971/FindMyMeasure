@@ -1,11 +1,6 @@
 ﻿using FindMyMeasure.Gui.ViewModels;
-using FindMyMeasure.Gui;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Runtime.Remoting.Channels;
 using System.IO;
-using System.Security.Policy;
-using System.Threading.Tasks;
 using System.Linq;
 
 namespace FindMyMeasure.Gui.Test
@@ -33,7 +28,7 @@ namespace FindMyMeasure.Gui.Test
         public void TestAddReportWrongPathError()
         {
             ReportSelectionViewModel viewModel = new ReportSelectionViewModel();
-            Assert.ThrowsException<FileNotFoundException>(() => { viewModel.AddReportConfigToList(@"not a real report"); });
+            Assert.Throws<FileNotFoundException>(() => { viewModel.AddReportConfigToList(@"not a real report"); });
         }
 
         [TestMethod]
