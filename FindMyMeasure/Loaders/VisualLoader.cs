@@ -52,8 +52,11 @@ namespace FindMyMeasure.Loaders
             if (singleVisualNode != null)
             {
                 JsonNode prototypeQueryNode = singleVisualNode["prototypeQuery"];
+                JsonNode objectsNode = singleVisualNode["objects"];
                 if (prototypeQueryNode != null)
-                    LoadArtifactsFromJson(prototypeQueryNode, visual);
+                    LoadDataArtifactsFromJson(prototypeQueryNode, visual);
+                if(objectsNode != null)
+                    LoadFormatingArtifactsFromJson(objectsNode, visual);
             }
             return visual;
         }
@@ -77,7 +80,7 @@ namespace FindMyMeasure.Loaders
             return artifacts;
         }
 
-        private static void LoadArtifactsFromJson(JsonNode prototypeQueryNode, Visual visual)
+        private static void LoadDataArtifactsFromJson(JsonNode prototypeQueryNode, Visual visual)
         {
             JsonNode selectNodes = prototypeQueryNode["Select"] ?? throw new ArgumentException("Visual node has no config.singleVisual.prototypeQuery.Select subnode");
             JsonNode fromNodes = prototypeQueryNode["From"] ?? throw new ArgumentException("Visual node has no config.singleVisual.prototypeQuery.From subnode");
@@ -100,6 +103,40 @@ namespace FindMyMeasure.Loaders
                     artifact.AddDependent(visual);
                 }
             }
+        }
+
+        private static void LoadFormatingArtifactsFromJson(JsonNode objects, Visual visual)
+        {
+            SemanticModel semanticModel = visual.GetReportPage().GetPowerBIReport().GetSemanticModel();
+            
+            var artifacts = new HashSet<DatabaseArtifact>();
+            artifacts.UnionWith(ExtractArtifactsFromObjectNode(objects, "Column", visual, semanticModel));
+            artifacts.UnionWith(ExtractArtifactsFromObjectNode(objects, "Measure", visual, semanticModel));
+
+            foreach(var artifact in artifacts)
+            {
+                visual.AddDataInput(artifact);
+                artifact.AddDependent(visual);
+            }
+
+        }
+
+        private static HashSet<DatabaseArtifact> ExtractArtifactsFromObjectNode(JsonNode node, string artifactType, IPowerBILeafNode source, SemanticModel semanticModel)
+        {
+            HashSet<DatabaseArtifact> artifacts = new HashSet<DatabaseArtifact>();
+            if (node.TryFindNodesByPropertyName(artifactType, out HashSet<JsonNode> artifactNodes))
+            {
+                foreach (JsonNode artifactNode in artifactNodes)
+                {
+                    string artifactName = artifactNode["Property"].ToString();
+                    string tableName = artifactNode["Expression"]["SourceRef"]["Entity"].ToString();
+                    if (!semanticModel.TryFindArtifactByName(artifactName, tableName, out DatabaseArtifact artifact))
+                        AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingArtifactWarning(source, artifactType, artifactName, tableName));
+                    else
+                        artifacts.Add(artifact);
+                }
+            }
+            return artifacts;
         }
     }
 }
