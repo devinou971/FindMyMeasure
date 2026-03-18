@@ -3,7 +3,6 @@ using FindMyMeasure.Gui.Models;
 using FindMyMeasure.Gui.Services;
 using FindMyMeasure.PowerBI;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,7 +57,7 @@ namespace FindMyMeasure.Gui.Test
         public void ExportToCSVTest()
         {
             
-            ExportResultsService.ExportAnalysisResultsToCSV(this.records, "testResult.csv", Encoding.UTF8);
+            ExportResultsService.ExportAnalysisResultsToCSV(this.records, "testResult.csv", Encoding.UTF8, ',');
 
             Assert.IsTrue(File.Exists("testResult.csv"));
             string content = File.ReadAllText("testResult.csv", Encoding.UTF8);
@@ -74,6 +73,27 @@ namespace FindMyMeasure.Gui.Test
                 "\"SemanticModel1\",Measure,\"measure1.1\",\"Table1\",UsedByUnused,1,Measure,\"measure2.1\",\"Table2\",\"\",\"\"\n" +
                 "\"SemanticModel1\",Measure,\"measure2.1\",\"Table2\",Unused,0,,,,,", content);
 
+        }
+
+        [TestMethod]
+        public void ExportToWindows1252CSVTest()
+        {
+
+            ExportResultsService.ExportAnalysisResultsToCSV(this.records, "testResult.csv", Encoding.GetEncoding("Windows-1252"), ';');
+
+            Assert.IsTrue(File.Exists("testResult.csv"));
+            string content = File.ReadAllText("testResult.csv", Encoding.GetEncoding("Windows-1252"));
+
+            Assert.AreEqual("Model;ArtifactType;ArtifactName;ArtifactTableName;Status;NumberOfUses;UsedInType;UsedInName;UsedInTable;UsedInReport;UsedInReportPage\n" +
+                "\"SemanticModel1\";Column;\"column1.1\";\"Table1\";Unused;0;;;;;\n" +
+                "\"SemanticModel1\";Column;\"column1.2\";\"Table1\";Unused;0;;;;;\n" +
+                "\"SemanticModel1\";Column;\"column2.1\";\"Table2\";Unused;0;;;;;\n" +
+                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;3;CalculatedColumn;\"calculatedColumn2.3\";\"Table2\";\"\";\"\"\n" +
+                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;3;Measure;\"measure1.1\";\"Table1\";\"\";\"\"\n" +
+                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;3;card;\"visual1\";\"\";\"report1\";\"page1\"\n" +
+                "\"SemanticModel1\";CalculatedColumn;\"calculatedColumn2.3\";\"Table2\";Unused;0;;;;;\n" +
+                "\"SemanticModel1\";Measure;\"measure1.1\";\"Table1\";UsedByUnused;1;Measure;\"measure2.1\";\"Table2\";\"\";\"\"\n" +
+                "\"SemanticModel1\";Measure;\"measure2.1\";\"Table2\";Unused;0;;;;;", content);
         }
     }
 }

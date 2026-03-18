@@ -58,5 +58,41 @@ namespace FindMyMeasure.Gui.Properties {
                 this["AnalyseHiddenPages"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(";")]
+        public char CSVDelimiter {
+            get {
+                return ((char)(this["CSVDelimiter"]));
+            }
+            set {
+                this["CSVDelimiter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Windows-1252")]
+        public string CSVEncoding {
+            get {
+                return ((string)(this["CSVEncoding"]));
+            }
+            set {
+                this["CSVEncoding"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\\")]
+        public char CSVEscapeCharacter {
+            get {
+                return ((char)(this["CSVEscapeCharacter"]));
+            }
+            set {
+                this["CSVEscapeCharacter"] = value;
+            }
+        }
     }
 }

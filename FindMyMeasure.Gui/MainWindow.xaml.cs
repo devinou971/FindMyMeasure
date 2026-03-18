@@ -2,6 +2,7 @@
 using FindMyMeasure.Gui.Models;
 using FindMyMeasure.Gui.ViewModels;
 using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -56,7 +57,14 @@ namespace FindMyMeasure.Gui
             bool? result = dialog.ShowDialog();
             if (result is null || result == false)
                 return;
-            this._viewModel.ExportCommand.Execute(dialog.FileName);
+            try
+            {
+                this._viewModel.ExportCommand.Execute(dialog.FileName);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Unable to export the file. Error message : " + ex.Message, "Export error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

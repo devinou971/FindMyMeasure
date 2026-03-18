@@ -1,6 +1,7 @@
 ﻿using FindMyMeasure.Database;
 using FindMyMeasure.Gui.Commands;
 using FindMyMeasure.Gui.Models;
+using FindMyMeasure.Gui.Properties;
 using FindMyMeasure.Gui.Services;
 using FindMyMeasure.Interfaces;
 using FindMyMeasure.PowerBI;
@@ -124,12 +125,8 @@ namespace FindMyMeasure.Gui.ViewModels
 
             this.UsageRecordsView = new CollectionViewSource { Source = usageRecords };
             this.UsageRecordsView.Filter += FilterUsageRecords;
-
-            this.ExportCommand = new RelayCommand(filePathObject =>
-            {
-                if(filePathObject is string filePath)
-                    ExportResultsService.ExportAnalysisResultsToCSV(usageRecords, filePath, Encoding.UTF8);
-            });
+            
+            this.ExportCommand = new RelayCommand(Export);
         }
 
         private void CalculateStats()
@@ -270,5 +267,25 @@ namespace FindMyMeasure.Gui.ViewModels
 
         }
 
+        private void Export(object filePathObject)
+        {
+            if (filePathObject is string filePath)
+            {
+                char csvDelimiter = Settings.Default.CSVDelimiter;
+                string csvEncodingName = Settings.Default.CSVEncoding;
+                char csvEscapeCharacter = Settings.Default.CSVEscapeCharacter;
+                Encoding csvEncoding;
+                try
+                {
+                    csvEncoding = Encoding.GetEncoding(csvEncodingName);
+                }
+                catch (Exception ex)
+                {
+                    csvEncoding = Encoding.UTF8;
+                }
+
+                ExportResultsService.ExportAnalysisResultsToCSV(this._usageRecords, filePath, csvEncoding, csvDelimiter, csvDelimiter);
+            }
+        }
     }
 }
