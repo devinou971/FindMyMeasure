@@ -1,24 +1,30 @@
 ﻿using FindMyMeasure.Database;
+using FindMyMeasure.Gui.Commands;
 using FindMyMeasure.Gui.Models;
+using FindMyMeasure.Gui.Properties;
+using FindMyMeasure.Gui.Services;
 using FindMyMeasure.Interfaces;
 using FindMyMeasure.PowerBI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace FindMyMeasure.Gui.ViewModels
 {
-    internal class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase
     {
         private CancellationTokenSource _filterCts;
         private IEnumerable<DataGridUsageRecord> _filteredRecords;
 
         private readonly HashSet<SemanticModel> _semanticModels;
         private readonly IEnumerable<DataGridUsageRecord> _usageRecords;
+        public ICommand ExportCommand { get; }
 
         public CollectionViewSource UsageRecordsView { get; }
 
@@ -119,6 +125,8 @@ namespace FindMyMeasure.Gui.ViewModels
 
             this.UsageRecordsView = new CollectionViewSource { Source = usageRecords };
             this.UsageRecordsView.Filter += FilterUsageRecords;
+            
+            this.ExportCommand = new RelayCommand(Export);
         }
 
         private void CalculateStats()
@@ -259,5 +267,25 @@ namespace FindMyMeasure.Gui.ViewModels
 
         }
 
+        private void Export(object filePathObject)
+        {
+            if (filePathObject is string filePath)
+            {
+                char csvDelimiter = Settings.Default.CSVDelimiter;
+                string csvEncodingName = Settings.Default.CSVEncoding;
+                char csvEscapeCharacter = Settings.Default.CSVEscapeCharacter;
+                Encoding csvEncoding;
+                try
+                {
+                    csvEncoding = Encoding.GetEncoding(csvEncodingName);
+                }
+                catch (Exception ex)
+                {
+                    csvEncoding = Encoding.UTF8;
+                }
+
+                ExportResultsService.ExportAnalysisResultsToCSV(this._usageRecords, filePath, csvEncoding, csvDelimiter, csvDelimiter);
+            }
+        }
     }
 }

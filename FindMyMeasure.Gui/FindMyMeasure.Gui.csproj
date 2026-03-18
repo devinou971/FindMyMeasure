@@ -62,6 +62,7 @@
     </ApplicationDefinition>
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Models\ReportAnalysisResult.cs" />
+    <Compile Include="Services\ExportResultsService.cs" />
     <Compile Include="Services\ReportAnalysisService.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

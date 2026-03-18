@@ -34,6 +34,10 @@
 
     <system:String x:Key="LoadingProgressWindow.Title">Loading in progress...</system:String>
     <system:String x:Key="LoadingProgressWindow.Label.AnalysisInProgress.Content">Analysis in progress ...</system:String>
-    
+
+    <system:String x:Key="MainWindow.Menu.MenuItem.File">_File</system:String>
+    <system:String x:Key="MainWindow.Menu.MenuItem.File.ExportToCSV">_Export to CSV</system:String>
+
+
 </ResourceDictionary>
     

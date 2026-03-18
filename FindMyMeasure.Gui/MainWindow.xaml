@@ -17,12 +17,18 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Menu Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0">
+            <MenuItem Header="{DynamicResource MainWindow.Menu.MenuItem.File}">
+                <MenuItem Header="{DynamicResource MainWindow.Menu.MenuItem.File.ExportToCSV}" Click="mExportToCSV_Click"/>
+            </MenuItem>
+        </Menu>
+        
+        <Button Grid.Column="0" Grid.Row="1" Content="{DynamicResource MainWindow.Button.ReturnToReportSelection.Content}" Height="25" Margin="10" Click="bReturnToReportSelection_Click"/>
 
-        <Button Grid.Column="0" Grid.Row="0" Content="{DynamicResource MainWindow.Button.ReturnToReportSelection.Content}" Height="25" Margin="10" Click="bReturnToReportSelection_Click"/>
-
-        <StackPanel Grid.Column="0" Grid.Row="1" Margin="10" Width="200" >
+        <StackPanel Grid.Column="0" Grid.Row="2" Margin="10" Width="200" >
             <Border BorderBrush="#FFABADB3" BorderThickness="1" Padding="5,0,5,5">
                 <!-- Filter stackpanel -->
                 <StackPanel>
@@ -65,7 +71,7 @@
         </StackPanel>
         
         <!-- Artifact list -->
-        <DataGrid Grid.Column="1" Grid.Row="1" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectedCellsChanged="dgUsageRecords_SelectedCellsChanged" SelectionUnit="Cell" ItemsSource="{Binding UsageRecordsView.View}"> 
+        <DataGrid Grid.Column="1" Grid.Row="2" Name="dgUsageRecords" Margin="5" IsReadOnly="True" AutoGenerateColumns="False" SelectedCellsChanged="dgUsageRecords_SelectedCellsChanged" SelectionUnit="Cell" ItemsSource="{Binding UsageRecordsView.View}"> 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Type}" Width="Auto" MinWidth="100">
                     <DataGridTextColumn.Header>
@@ -114,7 +120,7 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Grid.Column="2" Grid.Row="1" Margin="10">
+        <StackPanel Grid.Column="2" Grid.Row="2" Margin="10">
             <Label Content="{Binding SelectedArtifactLabel, Mode=OneWay}" FontWeight="Bold" FontSize="16"/>
             <Label Content="{DynamicResource MainWindow.Label.SelectedElement.Content}" Margin="0,10,0,0" FontSize="16"/>
             <StackPanel Name="spDetailsPanel" Visibility="Collapsed">
