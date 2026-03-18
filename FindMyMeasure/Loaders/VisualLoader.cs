@@ -112,8 +112,9 @@ namespace FindMyMeasure.Loaders
             var artifacts = new HashSet<DatabaseArtifact>();
             artifacts.UnionWith(ExtractArtifactsFromObjectNode(objects, "Column", visual, semanticModel));
             artifacts.UnionWith(ExtractArtifactsFromObjectNode(objects, "Measure", visual, semanticModel));
+            artifacts.UnionWith(ExtractArtifactsFromObjectNode(objects, "Hierarchy", visual, semanticModel));
 
-            foreach(var artifact in artifacts)
+            foreach (var artifact in artifacts)
             {
                 visual.AddDataInput(artifact);
                 artifact.AddDependent(visual);
@@ -128,12 +129,19 @@ namespace FindMyMeasure.Loaders
             {
                 foreach (JsonNode artifactNode in artifactNodes)
                 {
-                    string artifactName = artifactNode["Property"].ToString();
-                    string tableName = artifactNode["Expression"]["SourceRef"]["Entity"].ToString();
-                    if (!semanticModel.TryFindArtifactByName(artifactName, tableName, out DatabaseArtifact artifact))
-                        AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingArtifactWarning(source, artifactType, artifactName, tableName));
-                    else
-                        artifacts.Add(artifact);
+                    var nodeName = artifactType == "Hierarchy" ? "Hierarchy" : "Property";
+                    string artifactName = artifactNode[nodeName].ToString();
+                    if (artifactNode["Expression"]["SourceRef"]["Entity"] != null)
+                    {
+                        // There are 2 ways an artifact table can be represented: [ArtifactType].SourceRef.Entity and [ArtifactType].SourceRef.Source.
+                        // the latter needs extra data from a "From" node to correctly interprete it. However, only [ArtifactType].SourceRef.Entity is needed
+                        // as the [ArtifactType].SourceRef.Source is already present in the prototypeQuery.
+                        string tableName = artifactNode["Expression"]["SourceRef"]["Entity"].ToString();
+                        if (!semanticModel.TryFindArtifactByName(artifactName, tableName, out DatabaseArtifact artifact))
+                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingArtifactWarning(source, artifactType, artifactName, tableName));
+                        else
+                            artifacts.Add(artifact);
+                    }
                 }
             }
             return artifacts;
