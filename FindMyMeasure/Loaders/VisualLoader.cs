@@ -54,9 +54,9 @@ namespace FindMyMeasure.Loaders
                 JsonNode prototypeQueryNode = singleVisualNode["prototypeQuery"];
                 JsonNode objectsNode = singleVisualNode["objects"];
                 if (prototypeQueryNode != null)
-                    LoadDataArtifactsFromJson(prototypeQueryNode, visual);
+                    LoadArtifactsFromQueryNode(prototypeQueryNode, visual);
                 if(objectsNode != null)
-                    LoadFormatingArtifactsFromJson(objectsNode, visual);
+                    LoadArtifactsFromObjectsNode(objectsNode, visual);
             }
             return visual;
         }
@@ -80,10 +80,10 @@ namespace FindMyMeasure.Loaders
             return artifacts;
         }
 
-        private static void LoadDataArtifactsFromJson(JsonNode prototypeQueryNode, Visual visual)
+        private static void LoadArtifactsFromQueryNode(JsonNode qureyNode, Visual visual)
         {
-            JsonNode selectNodes = prototypeQueryNode["Select"] ?? throw new ArgumentException("Visual node has no config.singleVisual.prototypeQuery.Select subnode");
-            JsonNode fromNodes = prototypeQueryNode["From"] ?? throw new ArgumentException("Visual node has no config.singleVisual.prototypeQuery.From subnode");
+            JsonNode selectNodes = qureyNode["Select"] ?? throw new ArgumentException("Visual node has a query node without a Select subnode");
+            JsonNode fromNodes = qureyNode["From"] ?? throw new ArgumentException("Visual node has a query without a From subnode");
             SemanticModel semanticModel = visual.GetReportPage().GetPowerBIReport().GetSemanticModel();
 
             Dictionary<string, string> tableNameCorrespondance = new Dictionary<string, string>();
@@ -105,7 +105,7 @@ namespace FindMyMeasure.Loaders
             }
         }
 
-        private static void LoadFormatingArtifactsFromJson(JsonNode objects, Visual visual)
+        private static void LoadArtifactsFromObjectsNode(JsonNode objects, Visual visual)
         {
             SemanticModel semanticModel = visual.GetReportPage().GetPowerBIReport().GetSemanticModel();
             
@@ -113,6 +113,15 @@ namespace FindMyMeasure.Loaders
             artifacts.UnionWith(ExtractArtifactsFromObjectNode(objects, "Column", visual, semanticModel));
             artifacts.UnionWith(ExtractArtifactsFromObjectNode(objects, "Measure", visual, semanticModel));
             artifacts.UnionWith(ExtractArtifactsFromObjectNode(objects, "Hierarchy", visual, semanticModel));
+
+            HashSet<JsonNode> queryNodes = new HashSet<JsonNode>();
+            if(objects.TryFindNodesByPropertyName("Query", out queryNodes))
+            {
+                foreach(var queryNode in queryNodes)
+                {
+                    LoadArtifactsFromQueryNode(queryNode, visual);
+                }
+            }
 
             foreach (var artifact in artifacts)
             {
@@ -131,7 +140,7 @@ namespace FindMyMeasure.Loaders
                 {
                     var nodeName = artifactType == "Hierarchy" ? "Hierarchy" : "Property";
                     string artifactName = artifactNode[nodeName].ToString();
-                    if (artifactNode["Expression"]["SourceRef"]["Entity"] != null)
+                    if (artifactNode["Expression"].AsObject().ContainsKey("SourceRef") && artifactNode["Expression"]["SourceRef"]["Entity"] != null)
                     {
                         // There are 2 ways an artifact table can be represented: [ArtifactType].SourceRef.Entity and [ArtifactType].SourceRef.Source.
                         // the latter needs extra data from a "From" node to correctly interprete it. However, only [ArtifactType].SourceRef.Entity is needed

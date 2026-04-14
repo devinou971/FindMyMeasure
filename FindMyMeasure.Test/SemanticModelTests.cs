@@ -11,8 +11,9 @@ namespace FindMyMeasure.Test
     public class SemanticModelTests
     {
 
-        static SemanticModel testingModel;
-        
+        static SemanticModel corporateSpendModel;
+        static SemanticModel storeSalesModel;
+
         [AssemblyInitialize]
         public static void SetupEnvironment(TestContext testContext)
         {
@@ -32,13 +33,21 @@ namespace FindMyMeasure.Test
         public static void SetupClass(TestContext testContext)
         {
             // Runs at initialization of instance of class
-            var semanticModels = from n in Utils.ListAllLocalSemanticModels() where n.Name == "Corporate Spend" select n;
-            if (semanticModels.Count() == 0)
+
+            var semanticModels = Utils.ListAllLocalSemanticModels();
+            corporateSpendModel = semanticModels.FirstOrDefault(x => x.Name == "Corporate Spend");
+            storeSalesModel = semanticModels.FirstOrDefault(x => x.Name == "Store Sales");
+            if (corporateSpendModel == null)
             {
                 throw new Exception("Couldn't find the semantic mode of \"Corporate Spend.pbix\" report. Are you sure the report is opened ?");
             }
-            testingModel = semanticModels.First();
-            testingModel.LoadFullModel();
+            if (storeSalesModel == null)
+            {
+                throw new Exception("Couldn't find the semantic mode of \"Store Sales.pbix\" report. Are you sure the report is opened ?");
+            }
+
+            corporateSpendModel.LoadFullModel();
+            storeSalesModel.LoadFullModel();
         }
 
         [ClassCleanup]
@@ -64,13 +73,14 @@ namespace FindMyMeasure.Test
         [TestMethod]
         public void TestLoadMeasures()
         {
-            Assert.AreEqual(15, testingModel.GetMeasures().Count());
+            Assert.AreEqual(15, corporateSpendModel.GetMeasures().Count());
+            Assert.AreEqual(32, storeSalesModel.GetMeasures().Count());
         }
 
         [TestMethod]
         public void TestLoadRelationships()
         {
-            Assert.AreEqual(7+1, testingModel.GetRelationships().Count()); // There is 1 more relationship due to the hidden table "LocalDate_XXXX"
+            Assert.AreEqual(7+1, corporateSpendModel.GetRelationships().Count()); // There is 1 more relationship due to the hidden table "LocalDate_XXXX"
         }
     }
 }
