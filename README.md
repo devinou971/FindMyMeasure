@@ -16,14 +16,17 @@ This project is split into 2 parts :
 
 ## Supported backends 
 At the time of writing, I was only able to test 2 different ways to connect to a semantic model:
-- Azure Analysis Services 
-- Local models 
+- Azure Analysis Services (Tabular models)
+- Models baked into a report  
 
 For other models all bets are off. It may or may not work.
 
 I plan to change this in the future. \
 In order to increase the support list, I will most try to use the DaxStudio cmd `dscmd.exe`, as a dependency. \
 This will allow you to connect to all the semantic models they support.
+
+Note : 
+For Azure Anaysis Services, I have a very naive approach to auth ; I do not trigger the MSAL for now. That means I'm rellying on the Windows Integrated Auth to authenticate the requests triggered by ADOMD. 
 
 ## How to use ?
 
@@ -100,7 +103,8 @@ I you want to execute the examples, you can change the starting project.
 
 ## Known bugs
 The bug : When connecting to Azure Analysis Services, I get an authentification error. \
-The explanation : Currently, I use a very naive approach to auth. I just hope your machine is enrolled into Azure AD, and I'm relying on Windows Integrated Auth. I do not trigger MSAL fr now. 
+The explanation : Currently, I use a very naive approach to auth. I just hope your machine is enrolled into Azure AD, and I'm relying on Windows Integrated Auth. I do not trigger MSAL for now. \ 
+If your machine is enrolled into Azure AD, then you can try closing and starting the 
 
 ---
 
@@ -116,7 +120,6 @@ Currently Windows gives a security warning about the program because it is not s
 ## Roadmap / TODO
 - Change metadata gathering by using the `DaxStudio cmd`. This does add a dependecy to the project but will make the authenticating process easier and safer. 
 - Finish french translations.
-- Maybe rework the UI to use the MVVM pattern.
 
 ## License
 This project is provided under the MIT License. See LICENSE file for details.
