@@ -124,6 +124,10 @@ Currently Windows gives a security warning about the program because it is not s
 ## License
 This project is provided under the MIT License. See LICENSE file for details.
 
+## Disclaimer:
+This project is an independent, open-source implementation inspired by the functionality of Measure Killer.
+It does not use any code, assets, or proprietary information from Measure Killer and is not affiliated with or endorsed by its developers.
+
 ## AI use disclosure
 I use the LLMs available in Visual Studio to help with some parts of the software. \
 I used it more specificaly to code the GUI with WPF, and I used it to comment my code in the class library. \
