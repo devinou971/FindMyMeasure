@@ -57,20 +57,32 @@ namespace FindMyMeasure.Gui.Services
                             switch (dependent)
                             {
                                 case PowerBIReport pbiReport:
-                                    {
                                         usedInReport = pbiReport.Name;
                                         break;
-                                    }
                                 case ReportPage reportPage:
-                                    {
                                         usedInReport = reportPage.GetPowerBIReport().Name;
                                         usedInReportPage = reportPage.Name;
                                         break;
-                                    }
                                 case Visual visual:
-                                    {
                                         usedInReport = visual.GetReportPage().GetPowerBIReport().Name;
                                         usedInReportPage = visual.GetReportPage().Name;
+                                        break;
+                                case Filter filter:
+                                    {
+                                        switch (filter.GetParent())
+                                        {
+                                            case PowerBIReport report:
+                                                usedInReport = report.Name;
+                                                break;
+                                            case ReportPage reportPage:
+                                                usedInReport = reportPage.GetPowerBIReport().Name;
+                                                usedInReportPage = reportPage.Name;
+                                                break;
+                                            case Visual visual:
+                                                usedInReport = visual.GetReportPage().GetPowerBIReport().Name;
+                                                usedInReportPage = visual.GetReportPage().Name;
+                                                break;
+                                        }
                                         break;
                                     }
                                 default:

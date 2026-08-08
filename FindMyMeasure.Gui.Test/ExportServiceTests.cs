@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace FindMyMeasure.Gui.Test
 {
@@ -41,8 +42,11 @@ namespace FindMyMeasure.Gui.Test
             var report1 = new PowerBIReport("report1", "", null);
             var reportPage1 = new ReportPage("page1", "page1", report1);
             var visual1 = new Visual("visual1", "title1", "card", reportPage1);
+            Filter f1 = new Filter(reportPage1, "");
+            reportPage1.AddFilter(f1);
 
             c22.AddDependent(visual1);
+            c22.AddDependent(f1);
 
             this.records.Add(new DataGridUsageRecord(c11, "SemanticModel1"));
             this.records.Add(new DataGridUsageRecord(c12, "SemanticModel1"));
@@ -61,17 +65,19 @@ namespace FindMyMeasure.Gui.Test
 
             Assert.IsTrue(File.Exists("testResult.csv"));
             string content = File.ReadAllText("testResult.csv", Encoding.UTF8);
-
-            Assert.AreEqual("Model,ArtifactType,ArtifactName,ArtifactTableName,Status,NumberOfUses,UsedInType,UsedInName,UsedInTable,UsedInReport,UsedInReportPage\n" +
+            string expectedContent = "Model,ArtifactType,ArtifactName,ArtifactTableName,Status,NumberOfUses,UsedInType,UsedInName,UsedInTable,UsedInReport,UsedInReportPage\n" +
                 "\"SemanticModel1\",Column,\"column1.1\",\"Table1\",Unused,0,,,,,\n" +
                 "\"SemanticModel1\",Column,\"column1.2\",\"Table1\",Unused,0,,,,,\n" +
                 "\"SemanticModel1\",Column,\"column2.1\",\"Table2\",Unused,0,,,,,\n" +
-                "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,3,CalculatedColumn,\"calculatedColumn2.3\",\"Table2\",\"\",\"\"\n" +
-                "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,3,Measure,\"measure1.1\",\"Table1\",\"\",\"\"\n" +
-                "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,3,card,\"visual1\",\"\",\"report1\",\"page1\"\n" +
+                "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,4,CalculatedColumn,\"calculatedColumn2.3\",\"Table2\",\"\",\"\"\n" +
+                "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,4,Measure,\"measure1.1\",\"Table1\",\"\",\"\"\n" +
+                "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,4,card,\"visual1\",\"\",\"report1\",\"page1\"\n" +
+                "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,4,PowerBI Report Page Filter,\"Page Filter \\'0\\'\",\"\",\"report1\",\"page1\"\n" +
                 "\"SemanticModel1\",CalculatedColumn,\"calculatedColumn2.3\",\"Table2\",Unused,0,,,,,\n" +
                 "\"SemanticModel1\",Measure,\"measure1.1\",\"Table1\",UsedByUnused,1,Measure,\"measure2.1\",\"Table2\",\"\",\"\"\n" +
-                "\"SemanticModel1\",Measure,\"measure2.1\",\"Table2\",Unused,0,,,,,", content);
+                "\"SemanticModel1\",Measure,\"measure2.1\",\"Table2\",Unused,0,,,,,";
+
+            Assert.AreEqual(expectedContent, content);
 
         }
 
@@ -83,17 +89,19 @@ namespace FindMyMeasure.Gui.Test
 
             Assert.IsTrue(File.Exists("testResult.csv"));
             string content = File.ReadAllText("testResult.csv", Encoding.GetEncoding("Windows-1252"));
-
-            Assert.AreEqual("Model;ArtifactType;ArtifactName;ArtifactTableName;Status;NumberOfUses;UsedInType;UsedInName;UsedInTable;UsedInReport;UsedInReportPage\n" +
+            string expectedContent = "Model;ArtifactType;ArtifactName;ArtifactTableName;Status;NumberOfUses;UsedInType;UsedInName;UsedInTable;UsedInReport;UsedInReportPage\n" +
                 "\"SemanticModel1\";Column;\"column1.1\";\"Table1\";Unused;0;;;;;\n" +
                 "\"SemanticModel1\";Column;\"column1.2\";\"Table1\";Unused;0;;;;;\n" +
                 "\"SemanticModel1\";Column;\"column2.1\";\"Table2\";Unused;0;;;;;\n" +
-                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;3;CalculatedColumn;\"calculatedColumn2.3\";\"Table2\";\"\";\"\"\n" +
-                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;3;Measure;\"measure1.1\";\"Table1\";\"\";\"\"\n" +
-                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;3;card;\"visual1\";\"\";\"report1\";\"page1\"\n" +
+                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;4;CalculatedColumn;\"calculatedColumn2.3\";\"Table2\";\"\";\"\"\n" +
+                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;4;Measure;\"measure1.1\";\"Table1\";\"\";\"\"\n" +
+                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;4;card;\"visual1\";\"\";\"report1\";\"page1\"\n" +
+                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;4;PowerBI Report Page Filter;\"Page Filter \\'0\\'\";\"\";\"report1\";\"page1\"\n" +
                 "\"SemanticModel1\";CalculatedColumn;\"calculatedColumn2.3\";\"Table2\";Unused;0;;;;;\n" +
                 "\"SemanticModel1\";Measure;\"measure1.1\";\"Table1\";UsedByUnused;1;Measure;\"measure2.1\";\"Table2\";\"\";\"\"\n" +
-                "\"SemanticModel1\";Measure;\"measure2.1\";\"Table2\";Unused;0;;;;;", content);
+                "\"SemanticModel1\";Measure;\"measure2.1\";\"Table2\";Unused;0;;;;;";
+
+            Assert.AreEqual(expectedContent, content);
         }
     }
 }
