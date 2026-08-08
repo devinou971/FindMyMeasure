@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace FindMyMeasure.Loaders
+namespace FindMyMeasure.Loaders.PBIX.Legacy
 {
     internal class VisualLoader
     {
@@ -70,11 +70,14 @@ namespace FindMyMeasure.Loaders
                 {
                     string nodeName = artifactType == "Hierarchy" ? "Hierarchy" : "Property";
                     string artifactName = artifactNode[nodeName].ToString();
-                    string tableName = tableNameCorrespondance[artifactNode["Expression"]["SourceRef"]["Source"].ToString()];
-                    if (!semanticModel.TryFindArtifactByName(artifactName, tableName, out DatabaseArtifact artifact))
-                        AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingArtifactWarning(source, artifactType, artifactName, tableName));
-                    else
-                        artifacts.Add(artifact);
+                    if(artifactNode["Expression"]["SourceRef"] != null)
+                    {
+                        string tableName = tableNameCorrespondance[artifactNode["Expression"]["SourceRef"]["Source"].ToString()];
+                        if (!semanticModel.TryFindArtifactByName(artifactName, tableName, out DatabaseArtifact artifact))
+                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingArtifactWarning(source, artifactType, artifactName, tableName));
+                        else
+                            artifacts.Add(artifact);
+                    }
                 }
             }
             return artifacts;
@@ -88,7 +91,10 @@ namespace FindMyMeasure.Loaders
 
             Dictionary<string, string> tableNameCorrespondance = new Dictionary<string, string>();
             foreach (var fromNode in fromNodes.AsArray())
-                tableNameCorrespondance.Add(fromNode["Name"].ToString(), fromNode["Entity"].ToString());
+            {
+                if (fromNode["Type"].GetValue<int>() == 0)
+                    tableNameCorrespondance.Add(fromNode["Name"].ToString(), fromNode["Entity"].ToString());
+            }
 
             foreach (var node in selectNodes.AsArray())
             {
