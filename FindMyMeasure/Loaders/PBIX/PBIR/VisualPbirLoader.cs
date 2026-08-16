@@ -55,14 +55,14 @@ namespace FindMyMeasure.Loaders.PBIX.PBIR
         }
 
 
-        private static void LoadArtifactsFromNode(JsonNode objects, Visual visual)
+        private static void LoadArtifactsFromNode(JsonNode node, Visual visual)
         {
             SemanticModel semanticModel = visual.GetReportPage().GetPowerBIReport().GetSemanticModel();
 
             var artifacts = new HashSet<DatabaseArtifact>();
-            artifacts.UnionWith(ExtractArtifactsFromNode(objects, "Column", visual, semanticModel));
-            artifacts.UnionWith(ExtractArtifactsFromNode(objects, "Measure", visual, semanticModel));
-            artifacts.UnionWith(ExtractArtifactsFromNode(objects, "Hierarchy", visual, semanticModel));
+            artifacts.UnionWith(ExtractArtifactsFromNode(node, "Column", visual, semanticModel));
+            artifacts.UnionWith(ExtractArtifactsFromNode(node, "Measure", visual, semanticModel));
+            artifacts.UnionWith(ExtractArtifactsFromNode(node, "Hierarchy", visual, semanticModel));
                         
             foreach (var artifact in artifacts)
             {
@@ -79,18 +79,44 @@ namespace FindMyMeasure.Loaders.PBIX.PBIR
             {
                 foreach (JsonNode artifactNode in artifactNodes)
                 {
-                    var nodeName = artifactType == "Hierarchy" ? "Hierarchy" : "Property";
-                    string artifactName = artifactNode[nodeName].ToString();
-                    if (artifactNode["Expression"].AsObject().ContainsKey("SourceRef") && artifactNode["Expression"]["SourceRef"]["Entity"] != null)
+                    var nameOfTheNodeContainingTheArtifactName = artifactType == "Hierarchy" ? "Hierarchy" : "Property";
+                    if (artifactNode["Expression"].AsObject().ContainsKey("SourceRef"))
                     {
+                        string artifactName = artifactNode[nameOfTheNodeContainingTheArtifactName].ToString();
+                        string tableName = null;
                         // There are 2 ways an artifact table can be represented: [ArtifactType].SourceRef.Entity and [ArtifactType].SourceRef.Source.
-                        // the latter needs extra data from a "From" node to correctly interprete it. However, only [ArtifactType].SourceRef.Entity is needed
-                        // as the [ArtifactType].SourceRef.Source is already present in the prototypeQuery.
-                        string tableName = artifactNode["Expression"]["SourceRef"]["Entity"].ToString();
-                        if (!semanticModel.TryFindArtifactByName(artifactName, tableName, out DatabaseArtifact artifact))
-                            AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingArtifactWarning(source, artifactType, artifactName, tableName));
-                        else
-                            artifacts.Add(artifact);
+                        if (artifactNode["Expression"]["SourceRef"]["Entity"] != null)
+                        {
+                            // This is the way to interprete [ArtifactType].SourceRef.Entity
+                            tableName = artifactNode["Expression"]["SourceRef"]["Entity"].ToString();
+                            
+                        }
+                        else if(artifactNode["Expression"]["SourceRef"]["Source"] != null)
+                        {
+                            // This is the way to interprete [ArtifactType].SourceRef.Source
+                            if (artifactNode.Parent != null && artifactNode.Parent.Parent != null && artifactNode.Parent.Parent.Parent != null && artifactNode.Parent.Parent.Parent["From"]!= null)
+                            {
+                                var fromNode = artifactNode.Parent.Parent.Parent["From"];
+                                string tableId = artifactNode["Expression"]["SourceRef"]["Source"].GetValue<string>();
+                                var table = fromNode.AsArray().FirstOrDefault((x) =>
+                                {
+                                    return x["Name"].GetValue<string>() == tableId;
+                                });
+                                tableName = table["Entity"].GetValue<string>();
+
+                                if (!semanticModel.TryFindArtifactByName(artifactName, tableName, out DatabaseArtifact artifact))
+                                    AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingArtifactWarning(source, artifactType, artifactName, tableName));
+                                else
+                                    artifacts.Add(artifact);
+                            }
+                        }
+                        if (tableName != null)
+                        {
+                            if (!semanticModel.TryFindArtifactByName(artifactName, tableName, out DatabaseArtifact artifact))
+                                AnalysisWarningPublisher.GetInstance().PublishWarning(new MissingArtifactWarning(source, artifactType, artifactName, tableName));
+                            else
+                                artifacts.Add(artifact);
+                        }
                     }
                 }
             }
