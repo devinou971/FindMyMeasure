@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace FindMyMeasure.Loaders
+namespace FindMyMeasure.Loaders.PBIX.Legacy
 {
     public class PowerBIReportLoader
     {
@@ -24,21 +24,16 @@ namespace FindMyMeasure.Loaders
         /// <param name="analyseHiddenVisuals">Whether to include hidden visuals in the analysis.</param>
         /// <returns>A new PowerBIReport instance with all pages, visuals, and filters loaded.</returns>
         /// <exception cref="Exception">Thrown if the .pbix file structure is invalid or the layout cannot be parsed.</exception>
-        public static PowerBIReport LoadFromPbix(string pbixPath, SemanticModel semanticModelBackend, bool analyseHiddenPages, bool analyseHiddenVisuals)
+        public static PowerBIReport LoadFromPbix(ZipArchive pbixFile, PowerBIReport powerBIReport, SemanticModel semanticModelBackend, bool analyseHiddenPages, bool analyseHiddenVisuals)
         {
             // Extract the Layout file from the .pbix zip archive
             string layoutContent = null;
-            using (ZipArchive pbixFile = ZipFile.OpenRead(pbixPath))
-            {
-                ZipArchiveEntry layoutEntry = pbixFile.GetEntry("Report/Layout") ?? throw new Exception("Layout of pbix file not found");
-                StreamReader streamReader = new StreamReader(layoutEntry.Open(), Encoding.Unicode);
-                layoutContent = streamReader.ReadToEnd();
-            }
+            ZipArchiveEntry layoutEntry = pbixFile.GetEntry("Report/Layout") ?? throw new Exception("Layout of pbix file not found");
+            StreamReader streamReader = new StreamReader(layoutEntry.Open(), Encoding.Unicode);
+            layoutContent = streamReader.ReadToEnd();
+            streamReader.Close();
+
             if (layoutContent is null) throw new Exception("Layout of pbix file is empty");
-
-            string pbiReportName = pbixPath.Split(System.IO.Path.DirectorySeparatorChar).Last().Replace(".pbix", "");
-
-            PowerBIReport powerBIReport = new PowerBIReport(pbiReportName, pbixPath, semanticModelBackend);
 
             // Parse the layout JSON to extract report structure
             JsonNode layoutJsonNode = JsonNode.Parse(layoutContent) ?? throw new Exception("Unable to parse Layout of pbix file into json format");
@@ -64,17 +59,5 @@ namespace FindMyMeasure.Loaders
                 powerBIReport.AddFilter(filter);
             return powerBIReport;
         }
-
-        /// <summary>
-        /// Loads a PowerBI report with default settings (includes hidden pages and visuals).
-        /// </summary>
-        /// <param name="pbixPath">The full path to the .pbix file.</param>
-        /// <param name="semanticModelBackend">The semantic model to use for resolving references.</param>
-        /// <returns>A new PowerBIReport instance.</returns>
-        public static PowerBIReport LoadFromPbix(string pbixPath, SemanticModel semanticModelBackend)
-        {
-            return LoadFromPbix(pbixPath, semanticModelBackend, analyseHiddenPages: true, analyseHiddenVisuals: true);
-        }
-
     }
 }

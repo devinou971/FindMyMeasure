@@ -2,7 +2,7 @@
 using System;
 using System.Text.Json.Nodes;
 
-namespace FindMyMeasure.Loaders
+namespace FindMyMeasure.Loaders.PBIX.Legacy
 {
     internal class ReportPageLoader
     {

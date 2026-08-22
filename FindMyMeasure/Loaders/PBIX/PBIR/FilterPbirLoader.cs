@@ -4,12 +4,15 @@ using FindMyMeasure.PowerBI;
 using FindMyMeasure.WarningClasses;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 
-namespace FindMyMeasure.Loaders
+namespace FindMyMeasure.Loaders.PBIX.PBIR
 {
-    internal class FilterLoader
+    internal class FilterPbirLoader
     {
         /// <summary>
         /// Loads a filter from a JSON object and extracts column and measure references.
@@ -26,12 +29,14 @@ namespace FindMyMeasure.Loaders
 
             // Extract filter expressions - they can be in filterExpressionMetadata or directly in expression
             IEnumerable<JsonNode> expressionNodes;
-            if (filterObject.ContainsKey("filterExpressionMetadata"))
-                expressionNodes = filterObject["filterExpressionMetadata"]["expressions"].AsArray();
-            else
-                expressionNodes = new List<JsonNode>() { filterObject["expression"] };
+            expressionNodes = new List<JsonNode>() { filterObject["field"] };
 
-            Filter filter = new Filter(parent, filterObject.ToString());
+            string filterName = null;
+            if (filterObject["name"] != null)
+                filterName = filterObject["name"].GetValue<string>();
+            else
+                filterName = parent.Name; // filters may not have names if they are visual filters.
+            Filter filter = new Filter(filterName, parent, filterObject.ToString());
 
             // Process each expression in the filter
             foreach (var expressionNode in expressionNodes)
@@ -92,10 +97,10 @@ namespace FindMyMeasure.Loaders
         internal static HashSet<Filter> LoadMultipleFiltersFromJson(JsonNode filtersNode, PowerBINode scope)
         {
             HashSet<Filter> filters = new HashSet<Filter>();
-            if (filtersNode != null)
+            if (filtersNode != null && filtersNode["filters"] != null)
             {
                 // Deserialize the filters JSON string into an array
-                JsonNode filtersArray = JsonNode.Parse(filtersNode.GetValue<string>());
+                JsonNode filtersArray = filtersNode["filters"];
                 foreach (var filterNode in filtersArray.AsArray())
                 {
                     if (filterNode.GetValueKind() == JsonValueKind.Object)
