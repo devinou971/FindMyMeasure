@@ -42,7 +42,7 @@ namespace FindMyMeasure.Gui.Test
             var report1 = new PowerBIReport("report1", "", null);
             var reportPage1 = new ReportPage("page1", "page1", report1);
             var visual1 = new Visual("visual1", "title1", "card", reportPage1);
-            Filter f1 = new Filter(reportPage1, "");
+            Filter f1 = new Filter("filter1", reportPage1, "");
             reportPage1.AddFilter(f1);
 
             c22.AddDependent(visual1);
@@ -72,7 +72,7 @@ namespace FindMyMeasure.Gui.Test
                 "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,4,CalculatedColumn,\"calculatedColumn2.3\",\"Table2\",\"\",\"\"\n" +
                 "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,4,Measure,\"measure1.1\",\"Table1\",\"\",\"\"\n" +
                 "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,4,card,\"visual1\",\"\",\"report1\",\"page1\"\n" +
-                "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,4,PowerBI Report Page Filter,\"Page Filter \\'0\\'\",\"\",\"report1\",\"page1\"\n" +
+                "\"SemanticModel1\",Column,\"column2.2\",\"Table2\",Used,4,PowerBI Report Page Filter,\"Page Filter \\'filter1\\'\",\"\",\"report1\",\"page1\"\n" +
                 "\"SemanticModel1\",CalculatedColumn,\"calculatedColumn2.3\",\"Table2\",Unused,0,,,,,\n" +
                 "\"SemanticModel1\",Measure,\"measure1.1\",\"Table1\",UsedByUnused,1,Measure,\"measure2.1\",\"Table2\",\"\",\"\"\n" +
                 "\"SemanticModel1\",Measure,\"measure2.1\",\"Table2\",Unused,0,,,,,";
@@ -96,7 +96,7 @@ namespace FindMyMeasure.Gui.Test
                 "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;4;CalculatedColumn;\"calculatedColumn2.3\";\"Table2\";\"\";\"\"\n" +
                 "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;4;Measure;\"measure1.1\";\"Table1\";\"\";\"\"\n" +
                 "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;4;card;\"visual1\";\"\";\"report1\";\"page1\"\n" +
-                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;4;PowerBI Report Page Filter;\"Page Filter \\'0\\'\";\"\";\"report1\";\"page1\"\n" +
+                "\"SemanticModel1\";Column;\"column2.2\";\"Table2\";Used;4;PowerBI Report Page Filter;\"Page Filter \\'filter1\\'\";\"\";\"report1\";\"page1\"\n" +
                 "\"SemanticModel1\";CalculatedColumn;\"calculatedColumn2.3\";\"Table2\";Unused;0;;;;;\n" +
                 "\"SemanticModel1\";Measure;\"measure1.1\";\"Table1\";UsedByUnused;1;Measure;\"measure2.1\";\"Table2\";\"\";\"\"\n" +
                 "\"SemanticModel1\";Measure;\"measure2.1\";\"Table2\";Unused;0;;;;;";

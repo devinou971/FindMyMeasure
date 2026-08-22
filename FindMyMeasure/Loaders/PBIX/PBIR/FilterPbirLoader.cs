@@ -31,7 +31,12 @@ namespace FindMyMeasure.Loaders.PBIX.PBIR
             IEnumerable<JsonNode> expressionNodes;
             expressionNodes = new List<JsonNode>() { filterObject["field"] };
 
-            Filter filter = new Filter(parent, filterObject.ToString());
+            string filterName = null;
+            if (filterObject["name"] != null)
+                filterName = filterObject["name"].GetValue<string>();
+            else
+                filterName = parent.Name; // filters may not have names if they are visual filters.
+            Filter filter = new Filter(filterName, parent, filterObject.ToString());
 
             // Process each expression in the filter
             foreach (var expressionNode in expressionNodes)

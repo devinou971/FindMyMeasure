@@ -13,6 +13,7 @@ namespace FindMyMeasure.PowerBI
         private string _conditions = "";
         private static int NextId = 0;
         private int _id;
+        private string _name;
 
         public string Type { get {
                 switch (this._parent)
@@ -35,13 +36,13 @@ namespace FindMyMeasure.PowerBI
                 switch (this._parent)
                 {
                     case PowerBIReport _:
-                        return $"Report Filter '{_id}'";
+                        return $"Report Filter '{_name}'";
                     case ReportPage _:
-                        return $"Page Filter '{_id}'";
+                        return $"Page Filter '{_name}'";
                     case Visual _:
-                        return $"Visual Filter '{_id}'";
+                        return $"Visual Filter '{_name}'";
                     default:
-                        return $"Filter '{_id}'";
+                        return $"Filter '{_name}'";
                 }
             } }
 
@@ -50,8 +51,9 @@ namespace FindMyMeasure.PowerBI
         /// </summary>
         /// <param name="parent">The parent node (PowerBIReport, ReportPage, or Visual).</param>
         /// <param name="conditions">The filter conditions as a JSON string.</param>
-        internal Filter(PowerBINode parent, string conditions)
+        internal Filter(string filterName, PowerBINode parent, string conditions)
         {
+            this._name = filterName;
             this._parent = parent;
             this._conditions = conditions;
             this._id = NextId++;
