@@ -93,7 +93,7 @@ namespace FindMyMeasure
                     throw new ArgumentException("Process " + pid + " has no netstat entries");
 
                 string[] lines = output.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-                string processLine = lines.FirstOrDefault(x => x.EndsWith(pid.ToString()));
+                string processLine = lines.FirstOrDefault(x => x.EndsWith(pid.ToString()) && x.Contains("127.0.0.1"));
 
                 if (processLine is null)
                     throw new ArgumentException("Process " + pid + " has no open ports");
